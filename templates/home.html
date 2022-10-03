@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    .wrapper {
+        height: 80vh;
+        display: grid;
+        place-items: center;
+    }
+    .typing-demo {
+        width: 36.12ch;
+        animation: typing 2s steps(36), blink .5s step-end infinite alternate;
+        white-space: nowrap;
+        overflow: hidden;
+        border-right: 1.5px solid;
+        font-family: monospace;
+        font-size: 3em;
+    }
+    @keyframes typing {
+        from {
+            width: 0
+        }
+    } 
+    @keyframes blink {
+        50% {
+            border-color: transparent
+        }
+    }
+    #button {
+        background-color:#6b34eb;
+        border-color:#6b34eb;
+        min-width:325px;
+        font-size:27px;
+        position:absolute;
+        left:50%;
+        top:70%;
+        -ms-transform: translate(-50%, -70%);
+        transform: translate(-50%, -70%);
+    }
+</style>
+
+<div class="wrapper">
+    <div class="typing-demo">
+        <h1>Welcome to the</h1>
+        <span style="color:#6b34eb">ASG Personnel Accountability Tracker</span>
+    </div>
+</div>
+
+
+    {% endblock %}
