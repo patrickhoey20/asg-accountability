@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<script>
+    document.getElementById('home').className = 'nav-link';
+    document.getElementById('data').className = 'nav-link active';
+    document.getElementById('data').href = 'javascript: void(0)';
+    document.getElementById('person').className = 'nav-link';
+    document.getElementById('summary').className = 'nav-link';
+</script>
+
+<div>
+</div>
+
+{% endblock %}

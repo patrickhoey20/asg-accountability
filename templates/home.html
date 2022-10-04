@@ -1,15 +1,36 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<script>
+    document.getElementById('home').className = 'nav-link active';
+    document.getElementById('home').href = 'javascript: void(0)';
+    document.getElementById('data').className = 'nav-link';
+    document.getElementById('person').className = 'nav-link';
+    document.getElementById('summary').className = 'nav-link';
+ </script>
+
 <style>
+    body {
+        animation: fadeInAnimation ease 1.5s;
+        animation-iteration-count: 1;
+        animation-fill-mode: forwards;
+    }
+    @keyframes fadeInAnimation {
+        0% {
+            opacity: 0;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
     .wrapper {
         height: 80vh;
         display: grid;
         place-items: center;
     }
     .typing-demo {
-        width: 36.12ch;
-        animation: typing 2s steps(36), blink .5s step-end infinite alternate;
+        width: 32.12ch;
+        animation: typing 2s steps(32), blink .5s step-end infinite alternate;
         white-space: nowrap;
         overflow: hidden;
         border-right: 1.5px solid;
@@ -38,11 +59,10 @@
         transform: translate(-50%, -70%);
     }
 </style>
-
 <div class="wrapper">
     <div class="typing-demo">
         <h1>Welcome to the</h1>
-        <span style="color:#6b34eb">ASG Personnel Accountability Tracker</span>
+        <span style="color:#6b34eb">Personnel Accountability Tracker</span>
     </div>
 </div>
 
