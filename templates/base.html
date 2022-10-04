@@ -6,7 +6,7 @@
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
    <style>
       body {
-         background-color:#c6bae0;
+         background-color:#c6bae095;
          margin: 1.25%;
       }
       .nav-pills > li > a.active {
@@ -38,6 +38,19 @@
          color: white;
          transform: translateX(-50%);
          width:100%;
+      }
+      .content {
+        animation: fadeInAnimation ease 1.5s;
+        animation-iteration-count: 1;
+        animation-fill-mode: forwards;
+      }
+      @keyframes fadeInAnimation {
+         0% {
+               opacity: 0;
+         }
+         100% {
+               opacity: 1;
+         }
       }
    </style>
    </head>
