@@ -11,26 +11,30 @@
     document.getElementById('summary').className = 'nav-link';
 </script>
 
-<div style="justify-content:center;">
+<div>
 
     <h3>Enter New Data</h3>
 
     <form action="{{ url_for('data_submitted') }}" method="post" class="needs-validation" role="form" novalidate>
 
-        <div class="form-group">
-            <label class="control-label" for="stakeholder">Name of Stakeholder</label>
-            <select class="form-control" id="stakeholder" name="stakeholder" data-live-search="true" required title="Choose a stakeholder...">
-                {% for i in range(stakeholders | length) %}
-                <option value="{{stakeholders[i]}}">{{stakeholders[i]}}</option>
-                {% endfor %}
-            </select>
-            <div class="invalid-feedback">
-                Please select a stakeholder.
-            </div>
-            <label class="control-label" id="days_since_last_meeting" style="display:none;"></label>
-        </div>
-
         <div class="form-row">
+            <div class="form-group col-md-10">
+                <label class="control-label" for="stakeholder">Name of Stakeholder</label>
+                <select class="form-control" id="stakeholder" name="stakeholder" data-live-search="true" required title="Choose a stakeholder..." onchange="fill_last_meeting_label()">
+                    {% for i in range(stakeholders | length) %}
+                    <option value="{{stakeholders[i]}}">{{stakeholders[i]}}</option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">
+                    Please select a value.
+                </div>
+                <label class="control-label" id="days_since_last_meeting" style="display:none;"></label>
+                <script>
+                    var label = document.getElementById('days_since_last_meeting');
+                    var stakeholder = document.getElementById('stakeholder').value;
+                    // set value of label to most reecent stakeholder.date
+                </script>
+            </div>
             <div class="form-group col-md-2">
                 <label class="control-label" for="date">Today's Date</label>
                 <input class="form-control" id="date" name="date" type="date" required>
@@ -41,8 +45,11 @@
             <script>
                 document.querySelector("#date").valueAsDate = new Date();
             </script>
-            <div class="form-group col-md-4">
-                <label class="control-label" for="num_meetings_since_last">Number of Meetings with Admin Since Last Meeting</label>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label class="control-label" for="num_meetings_admin_since_last">Number of Meetings with Admin Since Last Meeting</label>
                 <input class="form-control" id="num_meetings_since_last" name="num_meetings_since_last" type="number" min="0" step="1" value="" required>
                 <div class="invalid-feedback">
                     Please enter a positive integer.
@@ -50,17 +57,108 @@
             </div>
             <div class="form-group col-md-6" id="admin_met_with_div">
                 <label class="control-label" for="admin_met_with">If you have met with admin, who have you met with?</label>
-                <select class="form-control" id="admin_met_with" name="admin_met_with" data-live-search="true" multiple>
+                <select class="form-control" id="admin_met_with" name="admin_met_with" data-live-search="true" multiple onchange="check_other()" title="Choose admin...">
                     {% for i in range(admin | length) %}
                     <option value="{{admin[i]}}">{{admin[i]}}</option>
                     {% endfor %}
+                    <option value="Other(s)">Other(s)</option>
                 </select>
             </div>
+            <div class="form-group col-md-2" id="other_div" style="display:none">
+                <label class="control-label" for="admin_met_with_other">Other(s)</label>
+                <input class="form-control" id="admin_met_with_other" name="admin_met_with_other" type="text" placeholder="Separate with commas">
+            </div>
+            <script>
+                function check_other() {
+                    var values = $('#admin_met_with').val();
+                    if (values.includes('Other(s)')) {
+                        document.getElementById('other_div').style.display = 'block';
+                        document.getElementById('admin_met_with_div').className = 'form-group col-md-4'
+                    } else {
+                        document.getElementById('other_div').style.display = 'none';
+                        document.getElementById('admin_met_with_div').className = 'form-group col-md-6'
+                    }
+                }
+            </script>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label class="control-label" for="num_meetings_administration_since_last">Number of Meetings with Admininistration Since Last Meeting</label>
+                <input class="form-control" id="num_meetings_administration_since_last" name="num_meetings_administration_since_last" type="number" min="0" step="1" value="" required>
+                <div class="invalid-feedback">
+                    Please enter a positive integer.
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <label class="control-label" for="num_meetings_students">Number of Meetings with Students Since Last Meeting</label>
+                <input class="form-control" id="num_meetings_students" name="num_meetings_students" type="number" min="0" step="1" value="" required>
+                <div class="invalid-feedback">
+                    Please enter a positive integer.
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label class="control-label" for="num_committee_meetings">Number of Committee Meetings Since Last Meeting</label>
+                <input class="form-control" id="num_committee_meetings" name="num_committee_meetings" type="number" min="0" step="1" value="" required>
+                <div class="invalid-feedback">
+                    Please enter a positive integer.
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <label class="control-label" for="num_meetings_other_committees">Number of Meetings with Other Committees Since Last Meeting</label>
+                <input class="form-control" id="num_meetings_other_committees" name="num_meetings_other_committees" type="number" min="0" step="1" value="" required>
+                <div class="invalid-feedback">
+                    Please enter a positive integer.
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label class="control-label" for="num_hours_worked">Number of Hours Worked on ASG Since Last Meeting</label>
+                <input class="form-control" id="num_hours_worked" name="num_hours_worked" type="number" min="0" step="1" value="" required>
+                <div class="invalid-feedback">
+                    Please enter a positive integer.
+                </div>
+            </div>
+            <div class="form-group col-md-4">
+                <label class="control-label" for="num_hours_worked">Rate how you’ve been feeling about ASG since we last talked</label>
+                <select class="form-control" id="num_hours_worked" name="num_hours_worked" title="Select rating..." required>
+                    <option data-subtext="Overwhelmed, stressed" value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option data-subtext="Feeling great!" value="5">5</option>
+                </select>
+                <div class="invalid-feedback">
+                    Please select a value.
+                </div>
+            </div>
+            <div class="form-group col-md-4">
+                <label class="control-label" for="num_hours_worked">Are you recieveing enough support from ASG exec?</label>
+                <select class="form-control" id="num_hours_worked" name="num_hours_worked" title="Select option..." required>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>                
+                <div class="invalid-feedback">
+                    Please select a value.
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="notes">Other Notes</label>
+            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
         </div>
 
         <input type="submit" value="Submit" class="btn btn-primary" style="background-color:#6b34eb;border-color:#6b34eb">
 
     </form>
+
+    <br>
+    <br>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
