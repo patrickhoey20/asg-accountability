@@ -20,7 +20,7 @@
         <div class="form-row">
             <div class="form-group col-md-10">
                 <label class="control-label" for="stakeholder">Name of Stakeholder</label>
-                <select class="form-control" id="stakeholder" name="stakeholder" data-live-search="true" required title="Choose a stakeholder..." onchange="fill_last_meeting_label()">
+                <select class="form-control" id="stakeholder" name="stakeholder" data-size="10" data-live-search="true" required title="Choose a stakeholder..." onchange="fill_last_meeting_label()">
                     {% for i in range(stakeholders | length) %}
                     <option value="{{stakeholders[i]}}">{{stakeholders[i]}}</option>
                     {% endfor %}
@@ -56,7 +56,7 @@
                 </div>
             </div>
             <div class="form-group col-md-6" id="admin_met_with_div">
-                <label class="control-label" for="admin_met_with">If you have met with admin, who have you met with?</label>
+                <label class="control-label" for="admin_met_with" data-size="10">If you have met with admin, who have you met with?</label>
                 <select class="form-control" id="admin_met_with" name="admin_met_with" data-live-search="true" multiple onchange="check_other()" title="Choose admin...">
                     {% for i in range(admin | length) %}
                     <option value="{{admin[i]}}">{{admin[i]}}</option>
