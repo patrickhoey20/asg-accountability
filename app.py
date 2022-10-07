@@ -101,6 +101,8 @@ def data_submitted():
         asg_rating = request.form.get('asg_rating')
         recieveing_support = request.form.get('recieveing_support')
         notes = request.form.get('notes')
+        if notes == '':
+            notes = None
         reg = Accountability(stakeholder,date,num_meetings_admin_since_last,admin_met_with,
                             num_meetings_administration_since_last,num_meetings_students,
                             num_committee_meetings,num_meetings_other_committees,num_hours_worked,
