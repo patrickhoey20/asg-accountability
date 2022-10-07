@@ -13,7 +13,6 @@ class Accountability(db.Model):
     date = db.Column(db.Date)
     num_meetings_admin_since_last = db.Column(db.Integer)
     admin_met_with = db.Column(db.String)
-    admin_met_with_other = db.Column(db.String)
     num_meetings_administration_since_last = db.Column(db.Integer)
     num_meetings_students = db.Column(db.Integer)
     num_committee_meetings = db.Column(db.Integer)
@@ -24,14 +23,13 @@ class Accountability(db.Model):
     notes = db.Column(db.String)
 
     def __init__(self, stakeholder, date, num_meetings_admin_since_last, 
-                        admin_met_with, admin_met_with_other, num_meetings_administration_since_last, 
+                        admin_met_with, num_meetings_administration_since_last, 
                         num_meetings_students, num_committee_meetings, num_meetings_other_committees, 
                         num_hours_worked, asg_rating, recieveing_support, notes):
         self.stakeholder = stakeholder
         self.date = date
         self.num_meetings_admin_since_last = num_meetings_admin_since_last
         self.admin_met_with = admin_met_with
-        self.admin_met_with_other = admin_met_with_other
         self.num_meetings_administration_since_last = num_meetings_administration_since_last
         self.num_meetings_students = num_meetings_students
         self.num_committee_meetings = num_committee_meetings
@@ -81,21 +79,32 @@ def data_submitted():
     if request.method == 'POST':
         stakeholder = request.form['stakeholder']
         date = request.form['date']
-        num_meetings_admin_since_last = request.form['num_meetings_admin_since_last']
-        admin_met_with = request.form['admin_met_with']
-        admin_met_with_other = request.form['admin_met_with_other']
-        num_meetings_administration_since_last = request.form['num_meetings_administration_since_last']
-        num_meetings_students = request.form['num_meetings_students']
-        num_committee_meetings = request.form['num_committee_meetings']
-        num_meetings_other_committees = request.form['num_meetings_other_committees']
-        num_hours_worked = request.form['num_hours_worked']
-        asg_rating = request.form['asg_rating']
-        recieveing_support = request.form['recieveing_support']
-        notes = request.form['notes']
+        num_meetings_admin_since_last = request.form.get('num_meetings_admin_since_last')
+        admin_met_with_lst = request.form.getlist('admin_met_with')
+        admin_met_with = ''
+        if admin_met_with_lst != []:
+            for admin in admin_met_with_lst:
+                if admin != 'Other(s)':
+                    admin_met_with += str(admin) + ','
+        admin_met_with_other = request.form.get('admin_met_with_other')
+        if admin_met_with_other != '':
+            admin_met_with += admin_met_with_other
+        else:
+            admin_met_with = admin_met_with[:-1]
+        if admin_met_with == '':
+            admin_met_with = None
+        num_meetings_administration_since_last = request.form.get('num_meetings_administration_since_last')
+        num_meetings_students = request.form.get('num_meetings_students')
+        num_committee_meetings = request.form.get('num_committee_meetings')
+        num_meetings_other_committees = request.form.get('num_meetings_other_committees')
+        num_hours_worked = request.form.get('num_hours_worked')
+        asg_rating = request.form.get('asg_rating')
+        recieveing_support = request.form.get('recieveing_support')
+        notes = request.form.get('notes')
         reg = Accountability(stakeholder,date,num_meetings_admin_since_last,admin_met_with,
-                            admin_met_with_other,num_meetings_administration_since_last,num_meetings_students,
-                            num_committee_meetings,num_meetings_other_committees,num_hours_worked,asg_rating,
-                            recieveing_support,notes)
+                            num_meetings_administration_since_last,num_meetings_students,
+                            num_committee_meetings,num_meetings_other_committees,num_hours_worked,
+                            asg_rating,recieveing_support,notes)
         db.session.add(reg)
         db.session.commit()
     return render_template('data_submitted.html')
