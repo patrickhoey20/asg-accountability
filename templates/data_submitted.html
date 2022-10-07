@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<script>
+    document.getElementById('home').className = 'nav-link';
+    document.getElementById('data').className = 'nav-link active';
+    document.getElementById('data').href = 'javascript: void(0)';
+    document.getElementById('person').className = 'nav-link';
+    document.getElementById('summary').className = 'nav-link';
+</script>
+
+<style>
+    .wrapper {
+        height: 80vh;
+        display: grid;
+        place-items: center;
+    }
+    .typing-demo {
+        width:23.12ch;
+        animation: typing 2s steps(23), blink .5s step-end infinite alternate;
+        white-space: nowrap;
+        overflow: hidden;
+        border-right: 1.5px solid;
+        font-family: monospace;
+        font-size: 3em;
+    }
+    @keyframes typing {
+        from {
+            width: 0
+        }
+    } 
+    @keyframes blink {
+        50% {
+            border-color: transparent
+        }
+    }
+    #button {
+        background-color:#6b34eb;
+        border-color:#6b34eb;
+        min-width:325px;
+        font-size:27px;
+        position:absolute;
+        left:50%;
+        top:70%;
+        -ms-transform: translate(-50%, -70%);
+        transform: translate(-50%, -70%);
+    }
+</style>
+<div class="wrapper">
+    <div class="typing-demo">
+        <span style="color:#6b34eb">Submitted successfully!</span>
+    </div>
+</div>
+
+
+    {% endblock %}

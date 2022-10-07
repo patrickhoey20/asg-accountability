@@ -12,11 +12,34 @@ class Accountability(db.Model):
     stakeholder = db.Column(db.String)
     date = db.Column(db.Date)
     num_meetings_admin_since_last = db.Column(db.Integer)
+    admin_met_with = db.Column(db.String)
+    admin_met_with_other = db.Column(db.String)
+    num_meetings_administration_since_last = db.Column(db.Integer)
+    num_meetings_students = db.Column(db.Integer)
+    num_committee_meetings = db.Column(db.Integer)
+    num_meetings_other_committees = db.Column(db.Integer)
+    num_hours_worked = db.Column(db.Integer)
+    asg_rating = db.Column(db.Integer)
+    recieveing_support = db.Column(db.String)
+    notes = db.Column(db.String)
 
-    def __init__(self, stakeholder, date, num_meetings_admin_since_last):
+    def __init__(self, stakeholder, date, num_meetings_admin_since_last, 
+                        admin_met_with, admin_met_with_other, num_meetings_administration_since_last, 
+                        num_meetings_students, num_committee_meetings, num_meetings_other_committees, 
+                        num_hours_worked, asg_rating, recieveing_support, notes):
         self.stakeholder = stakeholder
         self.date = date
         self.num_meetings_admin_since_last = num_meetings_admin_since_last
+        self.admin_met_with = admin_met_with
+        self.admin_met_with_other = admin_met_with_other
+        self.num_meetings_administration_since_last = num_meetings_administration_since_last
+        self.num_meetings_students = num_meetings_students
+        self.num_committee_meetings = num_committee_meetings
+        self.num_meetings_other_committees = num_meetings_other_committees
+        self.num_hours_worked = num_hours_worked
+        self.asg_rating = asg_rating
+        self.recieveing_support = recieveing_support
+        self.notes = notes
 
 with app.app_context():
     db.create_all()
@@ -59,7 +82,20 @@ def data_submitted():
         stakeholder = request.form['stakeholder']
         date = request.form['date']
         num_meetings_admin_since_last = request.form['num_meetings_admin_since_last']
-        reg = Accountability(stakeholder,date,num_meetings_admin_since_last)
+        admin_met_with = request.form['admin_met_with']
+        admin_met_with_other = request.form['admin_met_with_other']
+        num_meetings_administration_since_last = request.form['num_meetings_administration_since_last']
+        num_meetings_students = request.form['num_meetings_students']
+        num_committee_meetings = request.form['num_committee_meetings']
+        num_meetings_other_committees = request.form['num_meetings_other_committees']
+        num_hours_worked = request.form['num_hours_worked']
+        asg_rating = request.form['asg_rating']
+        recieveing_support = request.form['recieveing_support']
+        notes = request.form['notes']
+        reg = Accountability(stakeholder,date,num_meetings_admin_since_last,admin_met_with,
+                            admin_met_with_other,num_meetings_administration_since_last,num_meetings_students,
+                            num_committee_meetings,num_meetings_other_committees,num_hours_worked,asg_rating,
+                            recieveing_support,notes)
         db.session.add(reg)
         db.session.commit()
-    return render_template('home.html')
+    return render_template('data_submitted.html')

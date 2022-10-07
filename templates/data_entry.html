@@ -43,7 +43,11 @@
                 </div>
             </div>
             <script>
-                document.querySelector("#date").valueAsDate = new Date();
+                var now = new Date();
+                var day = ("0" + now.getDate()).slice(-2);
+                var month = ("0" + (now.getMonth() + 1)).slice(-2);
+                var today = now.getFullYear()+"-"+(month)+"-"+(day) ;
+                $('#date').val(today);
             </script>
         </div>
 
@@ -123,8 +127,8 @@
                 </div>
             </div>
             <div class="form-group col-md-4">
-                <label class="control-label" for="num_hours_worked">Rate how you’ve been feeling about ASG since we last talked</label>
-                <select class="form-control" id="num_hours_worked" name="num_hours_worked" title="Select rating..." required>
+                <label class="control-label" for="asg_rating">Rate how you’ve been feeling about ASG since we last talked</label>
+                <select class="form-control" id="asg_rating" name="asg_rating" title="Select rating..." required>
                     <option data-subtext="Overwhelmed, stressed" value="1">1</option>
                     <option value="2">2</option>
                     <option value="3">3</option>
@@ -136,8 +140,8 @@
                 </div>
             </div>
             <div class="form-group col-md-4">
-                <label class="control-label" for="num_hours_worked">Are you recieveing enough support from ASG exec?</label>
-                <select class="form-control" id="num_hours_worked" name="num_hours_worked" title="Select option..." required>
+                <label class="control-label" for="recieveing_support">Are you recieveing enough support from ASG exec?</label>
+                <select class="form-control" id="recieveing_support" name="recieveing_support" title="Select option..." required>
                     <option value="Yes">Yes</option>
                     <option value="No">No</option>
                 </select>                
