@@ -9,7 +9,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["connection_string"]
 db = SQLAlchemy(app)
 
 class Accountability(db.Model):
-    __tablename__ = "accoutability"
+    __tablename__ = "accountability"
     id = db.Column(db.Integer, primary_key=True)
     stakeholder = db.Column(db.String)
     date = db.Column(db.Date)
