@@ -2,8 +2,8 @@ from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 import os
 
-with open('connection_string.txt') as f:
-    lines = f.readlines()
+#with open('connection_string.txt') as f:
+#    lines = f.readlines()
 
 app = Flask(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = lines[0]
