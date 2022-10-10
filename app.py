@@ -2,12 +2,10 @@ from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 import os
 
-#with open('connection_string.txt') as f:
-#    lines = f.readlines()
-
 app = Flask(__name__)
-#app.config['SQLALCHEMY_DATABASE_URI'] = lines[0]
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["HEROKU_POSTGRESQL_AMBER_URL"]
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/asg-data'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["connection_string"]
+
 db = SQLAlchemy(app)
 
 class Accountability(db.Model):
