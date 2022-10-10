@@ -7,7 +7,7 @@ import os
 
 app = Flask(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = lines[0]
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["connection_string"]
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["HEROKU_POSTGRES_AMBER"]
 db = SQLAlchemy(app)
 
 class Accountability(db.Model):
