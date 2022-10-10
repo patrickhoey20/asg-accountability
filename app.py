@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
+with open('database-key.txt') as f:
+    lines = f.readlines()
+
 app = Flask(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://localhost/asg-data'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://zzgbanrolxeoql:8d9526e98359fc9b676443479d91ef329343b06010795271cedaa32be19a5693@ec2-3-214-2-141.compute-1.amazonaws.com:5432/dlglent4m7pik'
+app.config['SQLALCHEMY_DATABASE_URI'] = lines[0]
 db = SQLAlchemy(app)
 
 class Accountability(db.Model):
