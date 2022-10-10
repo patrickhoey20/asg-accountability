@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 # database key
-database-key.txt
+connection_string.txt
