@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["connection_string"]
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ybxcmsflpcwysh:76882f184b60711773adc88b8fecf8d947afc876278c2c260a6dc0ad785bd118@ec2-54-86-106-48.compute-1.amazonaws.com:5432/d3gh7rigg3clce'
 
 db = SQLAlchemy(app)
 
@@ -73,7 +73,14 @@ def home():
 
 @app.route("/data_entry")
 def data_entry():
-    return render_template('data_entry.html',stakeholders=stakeholders,admin=admin)
+    data = Accountability.query.order_by(Accountability.date.desc()).all()
+    stakeholders_and_dates = []
+    for row in data:
+        curr_row = {}
+        curr_row['date'] = row.date
+        curr_row['stakeholder'] = row.stakeholder
+        stakeholders_and_dates.append(curr_row)
+    return render_template('data_entry.html',stakeholders=stakeholders,admin=admin,stakeholders_and_dates=stakeholders_and_dates)
 
 @app.route("/data_submitted", methods=['POST'])
 def data_submitted():
@@ -110,4 +117,9 @@ def data_submitted():
                             asg_rating,recieveing_support,notes)
         db.session.add(reg)
         db.session.commit()
-    return render_template('data_submitted.html')
+    return render_template('data_submitted.html',stakeholders=stakeholders)
+
+@app.route("/search_by_person")
+def search_by_person():
+
+    return render_template('search_by_person.html')

@@ -20,7 +20,7 @@
         <div class="form-row">
             <div class="form-group col-md-10">
                 <label class="control-label" for="stakeholder">Name of Stakeholder</label>
-                <select class="form-control" id="stakeholder" name="stakeholder" data-size="10" data-live-search="true" required title="Choose a stakeholder..." onchange="fill_last_meeting_label()">
+                <select class="form-control" id="stakeholder" name="stakeholder" data-size="10" data-live-search="true" required title="Choose a stakeholder..." onchange="check_stakeholder_last_meeting()">
                     {% for i in range(stakeholders | length) %}
                     <option value="{{stakeholders[i]}}">{{stakeholders[i]}}</option>
                     {% endfor %}
@@ -28,11 +28,28 @@
                 <div class="invalid-feedback">
                     Please select a value.
                 </div>
-                <label class="control-label" id="days_since_last_meeting" style="display:none;"></label>
+                <div id="label-div" style="display:none">
+                    <label class="control-label" id="days_since_last_meeting"></label>
+                </div>
                 <script>
-                    var label = document.getElementById('days_since_last_meeting');
-                    var stakeholder = document.getElementById('stakeholder').value;
-                    // set value of label to most reecent stakeholder.date
+                    function check_stakeholder_last_meeting() {
+                        var label = document.getElementById('days_since_last_meeting');
+                        var label_div = document.getElementById('label-div');
+                        var stakeholder = document.getElementById('stakeholder').value;
+                        stakeholders_and_dates = JSON.parse('{{stakeholders_and_dates | tojson}}');
+                        for (let i = 0; i < stakeholders_and_dates.length; i++) {
+                            curr_row = stakeholders_and_dates[i];
+                            if (stakeholder === curr_row.stakeholder) {
+                                label.textContent = 'Date of last meeting: ' + curr_row.date.slice(0,16);
+                                label.style.color = '#6b34eb';
+                                label_div.style.display = 'block';
+                                return
+                            }
+                        }
+                        label.textContent = 'No meeting for this stakeholder yet!'
+                        label.style.color = '#6b34eb';
+                        label_div.style.display = 'block';
+                    }
                 </script>
             </div>
             <div class="form-group col-md-2">
