@@ -14,7 +14,6 @@ class Accountability(db.Model):
     date = db.Column(db.Date)
     num_meetings_admin_since_last = db.Column(db.Integer)
     admin_met_with = db.Column(db.String)
-    num_meetings_administration_since_last = db.Column(db.Integer)
     num_meetings_students = db.Column(db.Integer)
     num_committee_meetings = db.Column(db.Integer)
     num_meetings_other_committees = db.Column(db.Integer)
@@ -24,14 +23,12 @@ class Accountability(db.Model):
     notes = db.Column(db.String)
 
     def __init__(self, stakeholder, date, num_meetings_admin_since_last, 
-                        admin_met_with, num_meetings_administration_since_last, 
-                        num_meetings_students, num_committee_meetings, num_meetings_other_committees, 
+                        admin_met_with, num_meetings_students, num_committee_meetings, num_meetings_other_committees, 
                         num_hours_worked, asg_rating, recieveing_support, notes):
         self.stakeholder = stakeholder
         self.date = date
         self.num_meetings_admin_since_last = num_meetings_admin_since_last
         self.admin_met_with = admin_met_with
-        self.num_meetings_administration_since_last = num_meetings_administration_since_last
         self.num_meetings_students = num_meetings_students
         self.num_committee_meetings = num_committee_meetings
         self.num_meetings_other_committees = num_meetings_other_committees
@@ -64,8 +61,19 @@ stakeholders = ['Jason Hegelmeyer',
                 'Dylan Jost',
                 'Leah Ryzenman',
                 'Dalia Segal-Miller']
-admin =  ['Fill me',
-          'Ask Molly']
+admin =  ['Jaci Casazza',
+          'Michael Fitzpatrick',
+          'Roma Khanna',
+          'Miriam Sherin',
+          'K. Parker Hess',
+          'Hayley Kretchmer',
+          'Tracey Gibson-Jackson',
+          'Joe Lattal',
+          'Jeremy Schenk',
+          'Kelly Schaefer',
+          'Mona Dugo',
+          'Lesley-Ann Brown Henderson',
+          'Patricia Lampkin']
 
 @app.route("/")
 def home():
@@ -101,7 +109,6 @@ def data_submitted():
             admin_met_with = admin_met_with[:-1]
         if admin_met_with == '':
             admin_met_with = None
-        num_meetings_administration_since_last = request.form.get('num_meetings_administration_since_last')
         num_meetings_students = request.form.get('num_meetings_students')
         num_committee_meetings = request.form.get('num_committee_meetings')
         num_meetings_other_committees = request.form.get('num_meetings_other_committees')
@@ -112,8 +119,7 @@ def data_submitted():
         if notes == '':
             notes = None
         reg = Accountability(stakeholder,date,num_meetings_admin_since_last,admin_met_with,
-                            num_meetings_administration_since_last,num_meetings_students,
-                            num_committee_meetings,num_meetings_other_committees,num_hours_worked,
+                            num_meetings_students, num_committee_meetings,num_meetings_other_committees,num_hours_worked,
                             asg_rating,recieveing_support,notes)
         db.session.add(reg)
         db.session.commit()
@@ -121,5 +127,4 @@ def data_submitted():
 
 @app.route("/search_by_person")
 def search_by_person():
-
     return render_template('search_by_person.html')
