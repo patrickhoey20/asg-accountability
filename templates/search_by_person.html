@@ -190,12 +190,11 @@
                 ]},
                 options: {
                     scales: {
-                    xAxes: [{
-                        ticks: {
-                        min: 0
+                        y: {
+                            beginAtZero: true
                         }
-                    }],
-                }}
+                    }
+                },
             });
         }
         if (!is_in_db) {
