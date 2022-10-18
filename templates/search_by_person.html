@@ -187,8 +187,15 @@
                     backgroundColor: "rgba(107, 52, 235)",
                     data: admin_vals
                     }
-                ]
-                }
+                ]},
+                options: {
+                    scales: {
+                    xAxes: [{
+                        ticks: {
+                        min: 0
+                        }
+                    }],
+                }}
             });
         }
         if (!is_in_db) {
