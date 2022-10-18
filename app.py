@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["connection_string"]
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["DATABASE_URL"]
 
 db = SQLAlchemy(app)
 
@@ -123,8 +123,23 @@ def data_submitted():
                             asg_rating,recieveing_support,notes)
         db.session.add(reg)
         db.session.commit()
-    return render_template('data_submitted.html',stakeholders=stakeholders)
+    return render_template('data_submitted.html')
 
 @app.route("/search_by_person")
 def search_by_person():
-    return render_template('search_by_person.html')
+    data_q = Accountability.query.order_by(Accountability.date.desc()).all()
+    data = []
+    for row in data_q:
+        curr_row = {}
+        curr_row['date'] = row.date
+        curr_row['stakeholder'] = row.stakeholder
+        curr_row['num_meetings_admin_since_last'] = row.num_meetings_admin_since_last
+        curr_row['admin_met_with'] = row.admin_met_with
+        curr_row['num_meetings_students'] = row.num_meetings_students
+        curr_row['num_committee_meetings'] = row.num_committee_meetings
+        curr_row['num_meetings_other_committees'] = row.num_meetings_other_committees
+        curr_row['num_hours_worked'] = row.num_hours_worked
+        curr_row['asg_rating'] = row.asg_rating
+        curr_row['recieveing_support'] = row.recieveing_support
+        data.append(curr_row)
+    return render_template('search_by_person.html',stakeholders=stakeholders,data=data)

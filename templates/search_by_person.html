@@ -9,9 +9,199 @@
     document.getElementById('summary').className = 'nav-link';
 </script>
 
+<style>
+    #report {
+        text-align: center;
+        border-radius: 7.5px;
+        background-color: rgb(236, 236, 236);
+        padding: 5px;
+    }
+    .col-3-5 {
+        background-color: #8558e795;
+        border-radius: 25px;
+        width: 30.5%;
+        padding: 7px;
+    }
+    .col-5-5 {
+        background-color: #8558e795;
+        border-radius: 25px;
+        width: 46.25%;
+        padding: 7px;
+    }
+    .number {
+        font-size: 37.5px;
+    }
+    .heading {
+        font-size: 20px;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js'></script>
+
 <div class="content">
-    
+    <h5>Select a Stakeholder</h5>
+    <select class="form-control" id="stakeholder" name="stakeholder" data-size="10" data-live-search="true" required title="Choose a stakeholder..." onchange="generate_report()">
+        {% for i in range(stakeholders | length) %}
+        <option value="{{stakeholders[i]}}">{{stakeholders[i]}}</option>
+        {% endfor %}
+    </select>
+
+    <p></p>
+
+    <div id="report" style="display:none">
+        <h3 id="title">Donovan Cusick - Performance Report</h3>
+        <div id="actual-report" style="display:none">
+            <div class="row justify-content-center">
+                <div class="col-3-5 mr-md-3">
+                    <div class="heading">Average # Meetings with Admin</div>
+                    <div id="average_admin" class="number"></div>
+                </div>
+                <div class="col-3-5 mr-md-3">
+                    <div class="heading">Average # Meetings with Students</div>
+                    <div id="average_students" class="number"></div>
+                </div>
+                <div class="col-3-5 mr-md-3">
+                    <div class="heading">Average # Committee Meetings</div>
+                    <div id="average_committee" class="number"></div>
+                </div>
+            </div>
+            <p></p>
+            <div class="row justify-content-center">
+                <div class="col-3-5 mr-md-3">
+                    <div class="heading">Average # Meetings with Other Committees</div>
+                    <div id="average_other_committee" class="number"></div>
+                </div>
+                <div class="col-3-5 mr-md-3">
+                    <div class="heading">Average # Hours Worked on ASG</div>
+                    <div id="average_num_hours" class="number"></div>
+                </div>
+                <div class="col-3-5 mr-md-3">
+                    <div class="heading">Average Rating of Feeling Towards ASG</div>
+                    <div id="average_rating" class="number"></div>
+                </div>
+            </div>
+            <p></p>
+            <div class="row justify-content-center">
+                <div class="col-5-5 mr-md-3">
+                    <div class="heading">Are you recieveing support from ASG exec?</div>
+                    <canvas id="asg_support" width="400"></canvas>
+                </div>
+                <div class="col-5-5 mr-md-3">
+                    <div class="heading">Admin Met With</div>
+                    <canvas id="admin_met_with" width="400"></canvas>
+                </div>
+            </div>
+            <p></p>
+        </div>
+    </div>
+    <br>
+    <br>
 </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+<script>
+    $('select').selectpicker();
+</script>
+
+<script>
+    function generate_report() {
+        var stakeholder = document.getElementById('stakeholder').value;
+        let is_in_db = true
+        data = JSON.parse('{{data | tojson}}');
+        num_meetings = 0
+        tot_admin = 0
+        tot_students = 0
+        tot_committee = 0
+        tot_other_committee = 0
+        tot_num_hours = 0
+        tot_rating = 0
+        tot_yes = 0
+        tot_no = 0
+        admin_dict = {}
+        for (let i = 0; i < data.length; i++) {
+            curr_row = data[i];
+            if (curr_row.stakeholder === stakeholder) {
+                num_meetings++
+                tot_admin += curr_row.num_meetings_admin_since_last
+                tot_students += curr_row.num_meetings_students
+                tot_committee += curr_row.num_committee_meetings
+                tot_other_committee += curr_row.num_meetings_other_committees
+                tot_num_hours += curr_row.num_hours_worked
+                tot_rating += curr_row.asg_rating
+                if (curr_row.recieveing_support === 'Yes') {
+                    tot_yes++
+                } else {
+                    tot_no++
+                }
+                if (curr_row.admin_met_with != null) {
+                    admin_list = curr_row.admin_met_with.split(',');
+                    for (let j = 0; j < admin_list.length; j++) {
+                        curr_admin = admin_list[j]
+                        if (curr_admin in admin_dict) {
+                            admin_dict[curr_admin] += 1
+                        } else {
+                            admin_dict[curr_admin] = 1
+                        }
+                    }
+                }
+            }
+        }
+        if (num_meetings == 0) {
+            is_in_db = false
+        } else {
+            average_admin = tot_admin / num_meetings
+            document.getElementById('average_admin').textContent = +average_admin.toFixed(2);
+            average_students = tot_students / num_meetings
+            document.getElementById('average_students').textContent = +average_students.toFixed(2);
+            average_committee = tot_committee / num_meetings
+            document.getElementById('average_committee').textContent = +average_committee.toFixed(2);
+            average_other_committee = tot_other_committee / num_meetings
+            document.getElementById('average_other_committee').textContent = +average_other_committee.toFixed(2);
+            average_num_hours = tot_num_hours / num_meetings
+            document.getElementById('average_num_hours').textContent = +average_num_hours.toFixed(2);
+            average_rating = tot_rating / num_meetings
+            document.getElementById('average_rating').textContent = +average_rating.toFixed(2);
+            new Chart(document.getElementById("asg_support"), {
+                type: 'doughnut',
+                data: {
+                    labels: ["Yes", "No"],
+                    datasets: [{
+                        data: [tot_yes, tot_no],
+                        backgroundColor: ["rgba(107, 52, 235)", "rgba(234, 230, 242)"]
+                    }]
+                }
+            });
+            admin_vals = []
+            for (var key in admin_dict){
+                admin_vals.push(admin_dict[key])
+            }
+            new Chart(document.getElementById("admin_met_with"), {
+                type: 'bar',
+                data: {
+                labels: Object.keys(admin_dict),
+                datasets: [
+                    {
+                    label: "Number of meetings",
+                    backgroundColor: "rgba(107, 52, 235)",
+                    data: admin_vals
+                    }
+                ]
+                }
+            });
+        }
+        if (!is_in_db) {
+            document.getElementById('title').textContent = stakeholder + ' has no data yet!';
+            document.getElementById('report').style.display = 'block';
+            document.getElementById('actual-report').style.display = 'none';
+        } else {
+            document.getElementById('title').textContent = stakeholder + ' Performance Report';
+            document.getElementById('report').style.display = 'block';
+            document.getElementById('actual-report').style.display = 'block';
+        }
+    }
+</script>
 
 
     {% endblock %}
