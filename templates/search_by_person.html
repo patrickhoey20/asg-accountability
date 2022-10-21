@@ -28,11 +28,23 @@
         width: 46.25%;
         padding: 7px;
     }
+    .col-11-5 {
+        background-color: #8558e795;
+        border-radius: 25px;
+        width: 93.25%;
+        padding: 7px;
+    }
     .number {
         font-size: 37.5px;
     }
     .heading {
         font-size: 20px;
+    }
+    #admin-met-with-div ::selection {
+         background: grey;
+    }
+    #title-div ::selection {
+         background: grey;
     }
 </style>
 
@@ -49,9 +61,12 @@
 
     <p></p>
 
+    <p id="error-message" style="color:#8558e7;"></p>
+
     <div id="report" style="display:none">
-        <h3 id="title">Donovan Cusick - Performance Report</h3>
-        <div id="actual-report" style="display:none">
+        <div id="title-div">
+            <h3 id="title"></h3>
+        </div>
             <div class="row justify-content-center">
                 <div class="col-3-5 mr-md-3">
                     <div class="heading">Average # Meetings with Admin</div>
@@ -87,13 +102,21 @@
                     <div class="heading">Are you recieveing support from ASG exec?</div>
                     <canvas id="asg_support" width="400"></canvas>
                 </div>
-                <div class="col-5-5 mr-md-3">
+                <div class="col-5-5 mr-md-3" id="admin-met-with-div">
                     <div class="heading">Admin Met With</div>
+                    <h5 id="admin-error-message" style="position:relative;top:30%;color:whitesmoke"></h5>
                     <canvas id="admin_met_with" width="400"></canvas>
                 </div>
             </div>
             <p></p>
-        </div>
+            <div class="row justify-content-center">
+                <div class="col-11-5 mr-md-3">
+                    <div class="heading">Number of Hours Worked vs. Time</div>
+                    <h5 id="hours-error-message" style="color:whitesmoke"></h5>
+                    <canvas id="hours-worked-graph" width="800"></canvas>
+                </div>
+            </div>
+        <p></p>
     </div>
     <br>
     <br>
@@ -111,24 +134,37 @@
         let is_in_db = true
         data = JSON.parse('{{data | tojson}}');
         num_meetings = 0
+        dates_lst = []
         tot_admin = 0
         tot_students = 0
         tot_committee = 0
         tot_other_committee = 0
         tot_num_hours = 0
+        num_hours_lst = []
         tot_rating = 0
         tot_yes = 0
         tot_no = 0
         admin_dict = {}
+        last_date_added = null
+        last_date_found = false
+        first_date_added = null
         for (let i = 0; i < data.length; i++) {
             curr_row = data[i];
             if (curr_row.stakeholder === stakeholder) {
+                dates_lst.push(curr_row.date.slice(0,16))
+                if (!last_date_found) {
+                    last_date_found = true
+                    last_date_added = curr_row.date.slice(0,16)
+                } else {
+                    first_date_added = curr_row.date.slice(0,16)
+                }
                 num_meetings++
                 tot_admin += curr_row.num_meetings_admin_since_last
                 tot_students += curr_row.num_meetings_students
                 tot_committee += curr_row.num_committee_meetings
                 tot_other_committee += curr_row.num_meetings_other_committees
                 tot_num_hours += curr_row.num_hours_worked
+                num_hours_lst.push(curr_row.num_hours_worked)
                 tot_rating += curr_row.asg_rating
                 if (curr_row.recieveing_support === 'Yes') {
                     tot_yes++
@@ -148,8 +184,70 @@
                 }
             }
         }
+        if (first_date_added == null) {
+            first_date_added = last_date_added
+        }
+        if (first_date_added != last_date_added) {
+            new Chart(document.getElementById("hours-worked-graph"), {
+                type: 'line',
+                data: {
+                    labels: dates_lst,
+                    datasets: [{ 
+                        data: num_hours_lst, // change the data (and labels) - interpolate once per week?
+                        label: "Number of Hours Worked",
+                        borderColor: "rgba(107, 52, 235)",
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        xAxes: [{
+                        type: 'time',
+                        time: {
+                            unit: 'day',
+                            unitStepSize: 1,
+                            displayFormats: {
+                                'millisecond': 'MMM DD',
+                                'second': 'MMM DD',
+                                'minute': 'MMM DD',
+                                'hour': 'MMM DD',
+                                'day': 'MMM DD',
+                                'week': 'MMM DD',
+                                'month': 'MMM DD',
+                                'quarter': 'MMM DD',
+                                'year': 'MMM DD',
+                            }
+                        },
+                        display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Date of Meeting with ' + stakeholder
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Number of meetings'
+                            },
+                            ticks: {
+                                beginAtZero: true,
+                            }
+                        }]
+                    },
+                }
+            });
+            document.getElementById('hours-worked-graph').style.display = 'block'
+            document.getElementById('hours-error-message').style.display = 'none';
+        } else {
+            document.getElementById('hours-worked-graph').style.display = 'none'
+            document.getElementById('hours-error-message').textContent = stakeholder + " doesn't have enough data to graph!"
+            document.getElementById('hours-error-message').style.display = 'block';
+        }
         if (num_meetings == 0) {
             is_in_db = false
+        // else if num_meetings = 1, just make the averages the totals
+        // else num_meetings > 1, divide by the number of weeks between first and last meetings
         } else {
             average_admin = tot_admin / num_meetings
             document.getElementById('average_admin').textContent = +average_admin.toFixed(2);
@@ -177,36 +275,35 @@
             for (var key in admin_dict){
                 admin_vals.push(admin_dict[key])
             }
-            new Chart(document.getElementById("admin_met_with"), {
-                type: 'bar',
-                data: {
-                labels: Object.keys(admin_dict),
-                datasets: [
-                    {
-                    label: "Number of meetings",
-                    backgroundColor: "rgba(107, 52, 235)",
-                    data: admin_vals
-                    }
-                ]},
-                options: {
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    }
-                }
-            });
+            if (admin_vals.length > 0) {
+                new Chart(document.getElementById("admin_met_with"), {
+                    type: 'bar',
+                    data: {
+                    labels: Object.keys(admin_dict),
+                    datasets: [
+                        {
+                        label: "Number of meetings",
+                        backgroundColor: "rgba(107, 52, 235)",
+                        data: admin_vals
+                        }
+                    ]}
+                });
+                document.getElementById('admin-error-message').style.display = 'none';
+                document.getElementById('admin_met_with').style.display = 'block';
+            } else {
+                document.getElementById('admin-error-message').textContent = stakeholder + " hasn't met with any admin yet!"
+                document.getElementById('admin-error-message').style.display = 'block';
+                document.getElementById('admin_met_with').style.display = 'none';
+            }
         }
         if (!is_in_db) {
-            document.getElementById('title').textContent = stakeholder + ' has no data yet!';
-            document.getElementById('report').style.display = 'block';
-            document.getElementById('actual-report').style.display = 'none';
+            document.getElementById('error-message').textContent = stakeholder + ' has no data yet!';
+            document.getElementById('report').style.display = 'none';
+            document.getElementById('error-message').style.display = 'block';
         } else {
             document.getElementById('title').textContent = stakeholder + ' Performance Report';
             document.getElementById('report').style.display = 'block';
-            document.getElementById('actual-report').style.display = 'block';
+            document.getElementById('error-message').style.display = 'none';
         }
     }
 </script>
