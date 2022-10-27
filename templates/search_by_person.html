@@ -100,12 +100,12 @@
             <div class="row justify-content-center">
                 <div class="col-5-5 mr-md-3">
                     <div class="heading">Are you recieveing support from ASG exec?</div>
-                    <canvas id="asg_support" width="400"></canvas>
+                        <canvas id="asg_support" width="400"></canvas>
                 </div>
                 <div class="col-5-5 mr-md-3" id="admin-met-with-div">
                     <div class="heading">Admin Met With</div>
                     <h5 id="admin-error-message" style="position:relative;top:30%;color:whitesmoke"></h5>
-                    <canvas id="admin_met_with" width="400"></canvas>
+                        <canvas id="admin_met_with" width="400"></canvas>
                 </div>
             </div>
             <p></p>
@@ -113,7 +113,7 @@
                 <div class="col-11-5 mr-md-3">
                     <div class="heading">Number of Hours Worked vs. Time</div>
                     <h5 id="hours-error-message" style="color:whitesmoke"></h5>
-                    <canvas id="hours-worked-graph" width="800"></canvas>
+                        <canvas id="hours-worked-graph" width="800"></canvas>
                 </div>
             </div>
         <p></p>
@@ -129,6 +129,9 @@
 </script>
 
 <script>
+    var admin_met_with_canvas;
+    var hours_worked_canvas;
+    var asg_support_canvas;
     function generate_report() {
         var stakeholder = document.getElementById('stakeholder').value;
         let is_in_db = true
@@ -154,9 +157,9 @@
                 dates_lst.push(curr_row.date.slice(0,16))
                 if (!last_date_found) {
                     last_date_found = true
-                    last_date_added = curr_row.date.slice(0,16)
+                    last_date_added = new Date(curr_row.date)
                 } else {
-                    first_date_added = curr_row.date.slice(0,16)
+                    first_date_added = new Date(curr_row.date)
                 }
                 num_meetings++
                 tot_admin += curr_row.num_meetings_admin_since_last
@@ -187,8 +190,11 @@
         if (first_date_added == null) {
             first_date_added = last_date_added
         }
-        if (first_date_added != last_date_added) {
-            new Chart(document.getElementById("hours-worked-graph"), {
+        if (first_date_added != last_date_added) { // if 2+ dates in the db
+            if (hours_worked_canvas) {
+                hours_worked_canvas.destroy();
+            }
+            hours_worked_canvas = new Chart(document.getElementById("hours-worked-graph"), {
                 type: 'line',
                 data: {
                     labels: dates_lst,
@@ -246,22 +252,17 @@
         }
         if (num_meetings == 0) {
             is_in_db = false
-        // else if num_meetings = 1, just make the averages the totals
-        // else num_meetings > 1, divide by the number of weeks between first and last meetings
-        } else {
-            average_admin = tot_admin / num_meetings
-            document.getElementById('average_admin').textContent = +average_admin.toFixed(2);
-            average_students = tot_students / num_meetings
-            document.getElementById('average_students').textContent = +average_students.toFixed(2);
-            average_committee = tot_committee / num_meetings
-            document.getElementById('average_committee').textContent = +average_committee.toFixed(2);
-            average_other_committee = tot_other_committee / num_meetings
-            document.getElementById('average_other_committee').textContent = +average_other_committee.toFixed(2);
-            average_num_hours = tot_num_hours / num_meetings
-            document.getElementById('average_num_hours').textContent = +average_num_hours.toFixed(2);
-            average_rating = tot_rating / num_meetings
-            document.getElementById('average_rating').textContent = +average_rating.toFixed(2);
-            new Chart(document.getElementById("asg_support"), {
+        } else if (num_meetings == 1) {
+            document.getElementById('average_admin').textContent = +tot_admin.toFixed(2);
+            document.getElementById('average_students').textContent = +tot_students.toFixed(2);
+            document.getElementById('average_committee').textContent = +tot_committee.toFixed(2);
+            document.getElementById('average_other_committee').textContent = +tot_other_committee.toFixed(2);
+            document.getElementById('average_num_hours').textContent = +tot_num_hours.toFixed(2);
+            document.getElementById('average_rating').textContent = +tot_rating.toFixed(2);
+            if (asg_support_canvas) {
+                asg_support_canvas.destroy();
+            }
+            asg_support_canvas = new Chart(document.getElementById("asg_support"), {
                 type: 'doughnut',
                 data: {
                     labels: ["Yes", "No"],
@@ -276,7 +277,66 @@
                 admin_vals.push(admin_dict[key])
             }
             if (admin_vals.length > 0) {
-                new Chart(document.getElementById("admin_met_with"), {
+                if (admin_met_with_canvas) {
+                    admin_met_with_canvas.destroy();
+                }
+                admin_met_with_canvas = new Chart(document.getElementById("admin_met_with"), {
+                    type: 'bar',
+                    data: {
+                    labels: Object.keys(admin_dict),
+                    datasets: [
+                        {
+                        label: "Number of meetings",
+                        backgroundColor: "rgba(107, 52, 235)",
+                        data: admin_vals
+                        }
+                    ]}
+                });
+                document.getElementById('admin-error-message').style.display = 'none';
+                document.getElementById('admin_met_with').style.display = 'block';
+            } else {
+                document.getElementById('admin-error-message').textContent = stakeholder + " hasn't met with any admin yet!"
+                document.getElementById('admin-error-message').style.display = 'block';
+                document.getElementById('admin_met_with').style.display = 'none';
+            }
+        } else {
+            let diff_time = Math.abs(last_date_added - first_date_added);
+            let diff_days = Math.ceil(diff_time / (1000 * 60 * 60 * 24)); 
+            let num_weeks_between = diff_days / 7;
+            average_admin = tot_admin / num_weeks_between
+            document.getElementById('average_admin').textContent = +average_admin.toFixed(2);
+            average_students = tot_students / num_weeks_between
+            document.getElementById('average_students').textContent = +average_students.toFixed(2);
+            average_committee = tot_committee / num_weeks_between
+            document.getElementById('average_committee').textContent = +average_committee.toFixed(2);
+            average_other_committee = tot_other_committee / num_weeks_between
+            document.getElementById('average_other_committee').textContent = +average_other_committee.toFixed(2);
+            average_num_hours = tot_num_hours / num_weeks_between
+            document.getElementById('average_num_hours').textContent = +average_num_hours.toFixed(2);
+            average_rating = tot_rating / num_weeks_between
+            document.getElementById('average_rating').textContent = +average_rating.toFixed(2);
+            if (asg_support_canvas) {
+                asg_support_canvas.destroy();
+            }
+            asg_support_canvas = new Chart(document.getElementById("asg_support"), {
+                type: 'doughnut',
+                data: {
+                    labels: ["Yes", "No"],
+                    datasets: [{
+                        data: [tot_yes, tot_no],
+                        backgroundColor: ["rgba(107, 52, 235)", "rgba(234, 230, 242)"]
+                    }]
+                }
+            });
+            admin_vals = []
+            for (var key in admin_dict){
+                admin_vals.push(admin_dict[key])
+            }
+            if (admin_vals.length > 0) {
+                if (admin_met_with_canvas) {
+                    admin_met_with_canvas.destroy();
+                }
+                admin_met_with_canvas = new Chart(document.getElementById("admin_met_with"), {
                     type: 'bar',
                     data: {
                     labels: Object.keys(admin_dict),
