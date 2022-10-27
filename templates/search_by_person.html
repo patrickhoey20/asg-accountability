@@ -69,26 +69,26 @@
         </div>
             <div class="row justify-content-center">
                 <div class="col-3-5 mr-md-3">
-                    <div class="heading">Average # Meetings with Admin</div>
+                    <div class="heading"># Meetings with Admin per week</div>
                     <div id="average_admin" class="number"></div>
                 </div>
                 <div class="col-3-5 mr-md-3">
-                    <div class="heading">Average # Meetings with Students</div>
+                    <div class="heading"># Meetings with Students per week</div>
                     <div id="average_students" class="number"></div>
                 </div>
                 <div class="col-3-5 mr-md-3">
-                    <div class="heading">Average # Committee Meetings</div>
+                    <div class="heading"># Committee Meetings per week</div>
                     <div id="average_committee" class="number"></div>
                 </div>
             </div>
             <p></p>
             <div class="row justify-content-center">
                 <div class="col-3-5 mr-md-3">
-                    <div class="heading">Average # Meetings with Other Committees</div>
+                    <div class="heading"># Meetings with Other Committees per week</div>
                     <div id="average_other_committee" class="number"></div>
                 </div>
                 <div class="col-3-5 mr-md-3">
-                    <div class="heading">Average # Hours Worked on ASG</div>
+                    <div class="heading"># Hours Worked on ASG per week</div>
                     <div id="average_num_hours" class="number"></div>
                 </div>
                 <div class="col-3-5 mr-md-3">
@@ -311,9 +311,9 @@
             document.getElementById('average_committee').textContent = +average_committee.toFixed(2);
             average_other_committee = tot_other_committee / num_weeks_between
             document.getElementById('average_other_committee').textContent = +average_other_committee.toFixed(2);
-            average_num_hours = tot_num_hours / num_weeks_between
+            average_num_hours = tot_num_hours / num_meetings
             document.getElementById('average_num_hours').textContent = +average_num_hours.toFixed(2);
-            average_rating = tot_rating / num_weeks_between
+            average_rating = tot_rating / num_meetings
             document.getElementById('average_rating').textContent = +average_rating.toFixed(2);
             if (asg_support_canvas) {
                 asg_support_canvas.destroy();
