@@ -98,14 +98,10 @@
             </div>
             <p></p>
             <div class="row justify-content-center">
-                <div class="col-5-5 mr-md-3">
-                    <div class="heading">Are you recieveing support from ASG exec?</div>
-                        <canvas id="asg_support" width="400"></canvas>
-                </div>
-                <div class="col-5-5 mr-md-3" id="admin-met-with-div">
+                <div class="col-11-5 mr-md-3" id="admin-met-with-div">
                     <div class="heading">Admin Met With</div>
                     <h5 id="admin-error-message" style="position:relative;top:30%;color:whitesmoke"></h5>
-                        <canvas id="admin_met_with" width="400"></canvas>
+                        <canvas id="admin_met_with" width="800"></canvas>
                 </div>
             </div>
             <p></p>
@@ -116,7 +112,14 @@
                         <canvas id="hours-worked-graph" width="800"></canvas>
                 </div>
             </div>
-        <p></p>
+            <p></p>
+            <div class="row justify-content-center">
+                <div class="col-11-5 mr-md-3">
+                    <div class="heading">Are you recieveing support from ASG exec?</div>
+                        <canvas id="asg_support" width="800"></canvas>
+                </div>
+            </div>
+            <p></p>
     </div>
     <br>
     <br>
@@ -157,9 +160,9 @@
                 dates_lst.push(curr_row.date.slice(0,16))
                 if (!last_date_found) {
                     last_date_found = true
-                    last_date_added = new Date(curr_row.date)
+                    last_date_added = new Date(curr_row.date.slice(0,16))
                 } else {
-                    first_date_added = new Date(curr_row.date)
+                    first_date_added = new Date(curr_row.date.slice(0,16))
                 }
                 num_meetings++
                 tot_admin += curr_row.num_meetings_admin_since_last
@@ -175,7 +178,9 @@
                     tot_no++
                 }
                 if (curr_row.admin_met_with != null) {
-                    admin_list = curr_row.admin_met_with.split(',');
+                    admin_list = curr_row.admin_met_with.split(",").map(function (value) {
+                        return value.trim();
+                    });
                     for (let j = 0; j < admin_list.length; j++) {
                         curr_admin = admin_list[j]
                         if (curr_admin in admin_dict) {
@@ -187,6 +192,7 @@
                 }
             }
         }
+        console.log(admin_dict)
         if (first_date_added == null) {
             first_date_added = last_date_added
         }
@@ -199,7 +205,7 @@
                 data: {
                     labels: dates_lst,
                     datasets: [{ 
-                        data: num_hours_lst, // change the data (and labels) - interpolate once per week?
+                        data: num_hours_lst,
                         label: "Number of Hours Worked",
                         borderColor: "rgba(107, 52, 235)",
                         fill: false
@@ -290,7 +296,16 @@
                         backgroundColor: "rgba(107, 52, 235)",
                         data: admin_vals
                         }
-                    ]}
+                    ]},
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
                 });
                 document.getElementById('admin-error-message').style.display = 'none';
                 document.getElementById('admin_met_with').style.display = 'block';
@@ -301,7 +316,7 @@
             }
         } else {
             let diff_time = Math.abs(last_date_added - first_date_added);
-            let diff_days = Math.ceil(diff_time / (1000 * 60 * 60 * 24)); 
+            let diff_days = Math.ceil(diff_time / (1000 * 60 * 60 * 24)) + 7; // add 7 because the first responses considered the previous week of ASG week 
             let num_weeks_between = diff_days / 7;
             average_admin = tot_admin / num_weeks_between
             document.getElementById('average_admin').textContent = +average_admin.toFixed(2);
@@ -346,7 +361,16 @@
                         backgroundColor: "rgba(107, 52, 235)",
                         data: admin_vals
                         }
-                    ]}
+                    ]},
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
                 });
                 document.getElementById('admin-error-message').style.display = 'none';
                 document.getElementById('admin_met_with').style.display = 'block';
