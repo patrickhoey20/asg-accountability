@@ -63,11 +63,14 @@
 
     <p id="error-message" style="color:#8558e7;"></p>
 
-    <div id="report" style="display:none">
+    <div id="report" style="display:none;position:relative">
+        <button data-html2canvas-ignore onclick="genPDF()" class="btn btn-primary" style="background-color:#6b34eb;border-color:#6b34eb;position:absolute;top:8px;right:6px;">Export Report as PDF</button>
         <div id="title-div">
             <h3 id="title"></h3>
         </div>
+        <p></p>
             <div class="row justify-content-center">
+                <p data-html2canvas-ignore></p>
                 <div class="col-3-5 mr-md-3">
                     <div class="heading"># Meetings with Admin per week</div>
                     <div id="average_admin" class="number"></div>
@@ -120,7 +123,7 @@
                 </div>
             </div>
             <p></p>
-            <div class="row justify-content-center">
+            <div data-html2canvas-ignore class="row justify-content-center">
                 <div class="col-11-5 mr-md-3">
                     <div class="heading" style="margin-bottom:5px">Notes from Meeting</div>
                     <div id="accordion" style="width:80%;margin:auto;">
@@ -139,6 +142,10 @@
 <script>
     $('select').selectpicker();
 </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
 
 <script>
     var admin_met_with_canvas;
@@ -221,7 +228,6 @@
                 }
             }
         }
-        console.log(admin_dict)
         if (first_date_added == null) {
             first_date_added = last_date_added
         }
@@ -421,5 +427,22 @@
     }
 </script>
 
+<script>
+    function genPDF() {
+        stakeholder = document.getElementById('title').textContent.slice(0,-19).replace(' ','')
+        html2canvas(document.getElementById('report')).then(function (canvas) {
+            var wid;
+            var hgt;
+            var img = canvas.toDataURL("image/png", wid = canvas.width, hgt = canvas.height);
+            var hratio = hgt / wid;
+            const doc = new jsPDF();
+            var width = doc.internal.pageSize.width;
+            var height = doc.internal.pageSize.height;
+            var height = width * hratio;
+            doc.addImage(img, 'JPEG', width*.05, 10, width*.90, height*.90, 'FAST');
+            doc.save(`${stakeholder}PerformanceReport.pdf`);     
+        });
+    }
+</script>
 
-    {% endblock %}
+{% endblock %}
