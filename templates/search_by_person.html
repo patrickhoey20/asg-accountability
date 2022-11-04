@@ -164,6 +164,7 @@
         last_date_found = false
         first_date_added = null
         curr_entry = 0
+        document.getElementById('accordion').innerHTML = ''
         for (let i = 0; i < data.length; i++) {
             curr_row = data[i];
             if (curr_row.stakeholder === stakeholder) {
