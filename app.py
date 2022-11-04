@@ -140,5 +140,9 @@ def search_by_person():
         curr_row['num_hours_worked'] = row.num_hours_worked
         curr_row['asg_rating'] = row.asg_rating
         curr_row['recieveing_support'] = row.recieveing_support
+        if row.notes != None:
+            curr_row['notes'] = row.notes.replace('\r\n','newlinehere').replace('"',"'")
+        else:
+            curr_row['notes'] = row.notes
         data.append(curr_row)
     return render_template('search_by_person.html',stakeholders=stakeholders,data=data)

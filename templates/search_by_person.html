@@ -98,14 +98,6 @@
             </div>
             <p></p>
             <div class="row justify-content-center">
-                <div class="col-11-5 mr-md-3" id="admin-met-with-div">
-                    <div class="heading">Admin Met With</div>
-                    <h5 id="admin-error-message" style="position:relative;top:30%;color:whitesmoke"></h5>
-                        <canvas id="admin_met_with" width="800"></canvas>
-                </div>
-            </div>
-            <p></p>
-            <div class="row justify-content-center">
                 <div class="col-11-5 mr-md-3">
                     <div class="heading">Number of Hours Worked vs. Time</div>
                     <h5 id="hours-error-message" style="color:whitesmoke"></h5>
@@ -114,9 +106,26 @@
             </div>
             <p></p>
             <div class="row justify-content-center">
+                <div class="col-11-5 mr-md-3" id="admin-met-with-div">
+                    <div class="heading">Admin Met With</div>
+                    <h5 id="admin-error-message" style="color:whitesmoke"></h5>
+                        <canvas id="admin_met_with" width="800"></canvas>
+                </div>
+            </div>
+            <p></p>
+            <div class="row justify-content-center">
                 <div class="col-11-5 mr-md-3">
                     <div class="heading">Are you recieveing support from ASG exec?</div>
-                        <canvas id="asg_support" width="800"></canvas>
+                        <canvas id="asg_support" width="700"></canvas>
+                </div>
+            </div>
+            <p></p>
+            <div class="row justify-content-center">
+                <div class="col-11-5 mr-md-3">
+                    <div class="heading" style="margin-bottom:5px">Notes from Meeting</div>
+                    <div id="accordion" style="width:80%;margin:auto;">
+                    </div>
+                    <p></p>
                 </div>
             </div>
             <p></p>
@@ -154,9 +163,28 @@
         last_date_added = null
         last_date_found = false
         first_date_added = null
+        curr_entry = 0
         for (let i = 0; i < data.length; i++) {
             curr_row = data[i];
             if (curr_row.stakeholder === stakeholder) {
+                curr_entry++
+                notes = curr_row.notes
+                let div = document.createElement("div");
+                div.innerHTML = `<div class="card" style="margin:auto;border-radius:10px;">
+                          <div class="card-header" id="heading${curr_entry}">
+                            <h5 class="mb-0">
+                              <button class="btn btn-link" data-toggle="collapse" data-target="#collapse${curr_entry}" style="color:#6b34eb;font-size:20px;">
+                                ${curr_row.date.slice(0,16)}
+                              </button>
+                            </h5>
+                          </div>
+                          <div id="collapse${curr_entry}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                            <div class="card-body">
+                              ${notes.replace('newlinehere',"<br>")}
+                            </div>
+                          </div>
+                        </div>`
+                document.getElementById('accordion').append(div);
                 dates_lst.push(curr_row.date.slice(0,16))
                 if (!last_date_found) {
                     last_date_found = true
