@@ -143,6 +143,6 @@ def search_by_person():
         if row.notes != None:
             curr_row['notes'] = row.notes.replace('\r\n','newlinehere').replace('"',"'")
         else:
-            curr_row['notes'] = row.notes
+            curr_row['notes'] = ''
         data.append(curr_row)
     return render_template('search_by_person.html',stakeholders=stakeholders,data=data)
