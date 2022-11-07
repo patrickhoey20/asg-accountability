@@ -188,7 +188,7 @@
                           </div>
                           <div id="collapse${curr_entry}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
                             <div class="card-body">
-                              ${notes.replace('newlinehere',"<br>")}
+                              ${notes.replace(/newlinehere/g,"<br>")}
                             </div>
                           </div>
                         </div>`
