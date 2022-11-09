@@ -177,7 +177,7 @@
             if (curr_row.stakeholder === stakeholder) {
                 curr_entry++
                 notes = curr_row.notes
-                let div = document.createElement("div");
+                let div = document.createElement("div")
                 div.innerHTML = `<div class="card" style="margin:auto;border-radius:10px;">
                           <div class="card-header" id="heading${curr_entry}">
                             <h5 class="mb-0">
@@ -216,6 +216,9 @@
                 if (curr_row.admin_met_with != null) {
                     admin_list = curr_row.admin_met_with.split(",").map(function (value) {
                         return value.trim();
+                    });
+                    admin_list = admin_list.filter(function(x) {
+                        return x !== '';
                     });
                     for (let j = 0; j < admin_list.length; j++) {
                         curr_admin = admin_list[j]
@@ -286,7 +289,7 @@
             });
             document.getElementById('hours-worked-graph').style.display = 'block'
             document.getElementById('hours-error-message').style.display = 'none';
-        } else {
+        } else { // 0 or 1 dates in the db
             document.getElementById('hours-worked-graph').style.display = 'none'
             document.getElementById('hours-error-message').textContent = stakeholder + " doesn't have enough data to graph!"
             document.getElementById('hours-error-message').style.display = 'block';
