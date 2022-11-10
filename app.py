@@ -13,6 +13,7 @@ class Accountability(db.Model):
     date = db.Column(db.Date)
     num_meetings_admin_since_last = db.Column(db.Integer)
     admin_met_with = db.Column(db.String)
+    admin_met_with_numbers = db.Column(db.String)
     num_meetings_students = db.Column(db.Integer)
     num_committee_meetings = db.Column(db.Integer)
     num_meetings_other_committees = db.Column(db.Integer)
@@ -22,12 +23,13 @@ class Accountability(db.Model):
     notes = db.Column(db.String)
 
     def __init__(self, stakeholder, date, num_meetings_admin_since_last, 
-                        admin_met_with, num_meetings_students, num_committee_meetings, num_meetings_other_committees, 
+                        admin_met_with, admin_met_with_numbers, num_meetings_students, num_committee_meetings, num_meetings_other_committees, 
                         num_hours_worked, asg_rating, recieveing_support, notes):
         self.stakeholder = stakeholder
         self.date = date
         self.num_meetings_admin_since_last = num_meetings_admin_since_last
         self.admin_met_with = admin_met_with
+        self.admin_met_with_numbers = admin_met_with_numbers
         self.num_meetings_students = num_meetings_students
         self.num_committee_meetings = num_committee_meetings
         self.num_meetings_other_committees = num_meetings_other_committees
@@ -97,17 +99,26 @@ def data_submitted():
         num_meetings_admin_since_last = request.form.get('num_meetings_admin_since_last')
         admin_met_with_lst = request.form.getlist('admin_met_with')
         admin_met_with = ''
+        admin_met_with_numbers = ''
         if admin_met_with_lst != []:
             for admin in admin_met_with_lst:
                 if admin != 'Other(s)':
                     admin_met_with += str(admin) + ','
-        admin_met_with_other = request.form.get('admin_met_with_other')
-        if admin_met_with_other != '':
-            admin_met_with += admin_met_with_other
-        else:
-            admin_met_with = admin_met_with[:-1]
+                    admin_met_with_numbers += str(request.form.get('num_meetings_with_' + str(admin))) + ','
+        if 'Other(s)' in admin_met_with_lst:
+            admin_met_with_other = request.form.get('admin_met_with_other')
+            if admin_met_with_other != '':
+                admin_met_with += admin_met_with_other
+                lst = [word.strip() for word in admin_met_with_other.split(',')]
+                for j in lst:
+                    admin_met_with_numbers += str(request.form.get('num_meetings_with_' + str(j))) + ','
+            else:
+                admin_met_with = admin_met_with[:-1]
+            admin_met_with_numbers = admin_met_with_numbers[:-1]
         if admin_met_with == '':
             admin_met_with = None
+        if admin_met_with_numbers == '':
+            admin_met_with_numbers = None
         num_meetings_students = request.form.get('num_meetings_students')
         num_committee_meetings = request.form.get('num_committee_meetings')
         num_meetings_other_committees = request.form.get('num_meetings_other_committees')
@@ -117,7 +128,7 @@ def data_submitted():
         notes = request.form.get('notes')
         if notes == '':
             notes = None
-        reg = Accountability(stakeholder,date,num_meetings_admin_since_last,admin_met_with,
+        reg = Accountability(stakeholder,date,num_meetings_admin_since_last,admin_met_with,admin_met_with_numbers,
                             num_meetings_students, num_committee_meetings,num_meetings_other_committees,num_hours_worked,
                             asg_rating,recieveing_support,notes)
         db.session.add(reg)
@@ -134,6 +145,7 @@ def search_by_person():
         curr_row['stakeholder'] = row.stakeholder
         curr_row['num_meetings_admin_since_last'] = row.num_meetings_admin_since_last
         curr_row['admin_met_with'] = row.admin_met_with
+        curr_row['admin_met_with_numbers'] = row.admin_met_with_numbers
         curr_row['num_meetings_students'] = row.num_meetings_students
         curr_row['num_committee_meetings'] = row.num_committee_meetings
         curr_row['num_meetings_other_committees'] = row.num_meetings_other_committees

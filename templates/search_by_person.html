@@ -220,12 +220,18 @@
                     admin_list = admin_list.filter(function(x) {
                         return x !== '';
                     });
+                    admin_num_list = curr_row.admin_met_with_numbers.split(",").map(function (value) {
+                        return value.trim();
+                    });
+                    admin_num_list = admin_num_list.filter(function(x) {
+                        return x !== '';
+                    });
                     for (let j = 0; j < admin_list.length; j++) {
                         curr_admin = admin_list[j]
                         if (curr_admin in admin_dict) {
-                            admin_dict[curr_admin] += 1
+                            admin_dict[curr_admin] += Number(admin_num_list[j])
                         } else {
-                            admin_dict[curr_admin] = 1
+                            admin_dict[curr_admin] = Number(admin_num_list[j])
                         }
                     }
                 }

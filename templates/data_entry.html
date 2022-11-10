@@ -87,27 +87,62 @@
             </div>
             <div class="form-group col-md-2" id="other_div" style="display:none">
                 <label class="control-label" for="admin_met_with_other">Other(s)</label>
-                <input class="form-control" id="admin_met_with_other" name="admin_met_with_other" type="text" placeholder="Separate with commas">
+                <input class="form-control" id="admin_met_with_other" name="admin_met_with_other" type="text" placeholder="Separate with commas" onchange="check_other()">
             </div>
-            <script>
-                function check_other() {
-                    var values = $('#admin_met_with').val();
-                    if (values.includes('Other(s)')) {
-                        document.getElementById('other_div').style.display = 'block';
-                        document.getElementById('admin_met_with_div').className = 'form-group col-md-4'
-                    } else {
-                        document.getElementById('other_div').style.display = 'none';
-                        document.getElementById('admin_met_with_div').className = 'form-group col-md-6'
-                    }
-                }
-            </script>
         </div>
         <div id="num_per_admin_div" style="display:none;">
-            <div class="form-row">
-                <div class="form-group col-md-12">
-                </div>
-            </div>
         </div>
+        <script>
+            old_values = [];
+            function check_other() {
+                var values = $('#admin_met_with').val();
+                if (values.includes('Other(s)')) {
+                    document.getElementById('other_div').style.display = 'block';
+                    document.getElementById('admin_met_with_div').className = 'form-group col-md-4'
+                } else {
+                    document.getElementById('other_div').style.display = 'none';
+                    document.getElementById('admin_met_with_div').className = 'form-group col-md-6'
+                }
+                if (values.includes('Other(s)')) {
+                    values.pop()
+                    others = document.getElementById('admin_met_with_other').value
+                    if (others != '') {
+                        others_list = others.split(",").map(function (value) {
+                            return value.trim();
+                        });
+                        for (let k = 0; k < others_list.length; k++) {
+                            values.push(others_list[k])
+                        }
+                    }
+                }
+                let difference = values.filter(x => !old_values.includes(x));
+                if (difference.length > 0) {
+                    for (let j = 0; j < difference.length; j++) {
+                    var div = document.createElement("div")
+                        div.innerHTML = `<div class="form-row">
+                                            <div class="form-group col-md-12" name="${difference[j]}_div">
+                                                <label class="control-label" for="num_meetings_with_${difference[j]}">Number of Meetings with ${difference[j]}</label>
+                                                <input class="form-control" id="num_meetings_with_${difference[j]}" name="num_meetings_with_${difference[j]}" type="number" min="1" step="1" value="1" required>
+                                                <div class="invalid-feedback">
+                                                    Please enter a positive integer.
+                                                </div>
+                                            </div>
+                                        </div>`
+                        document.getElementById('num_per_admin_div').append(div);
+                        document.getElementById('num_per_admin_div').style.display = 'block'
+                    }
+                } else {
+                    difference = old_values.filter(x => !values.includes(x));
+                    for (let j = 0; j < difference.length; j++) {
+                        all = document.getElementsByName(`${difference[j]}_div`)
+                        for (let j = 0; j < all.length; j++) {
+                            all[j].style.display = 'none'
+                        }
+                    }
+                }
+                old_values = values
+            }
+        </script>
 
         <div class="form-row">
             <div class="form-group col-md-6">
