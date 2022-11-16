@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<script>
+    document.getElementById('home').className = 'nav-link';
+    document.getElementById('data').className = 'nav-link';
+    document.getElementById('person').className = 'nav-link';
+    document.getElementById('summary').className = 'nav-link active';
+    document.getElementById('summary').href = 'javascript: void(0)';
+</script>
+
+<style>
+    #report {
+        text-align: center;
+        border-radius: 7.5px;
+        background-color: rgb(236, 236, 236);
+        padding: 5px;
+    }
+    .col-3-5 {
+        background-color: #8558e795;
+        border-radius: 25px;
+        width: 30.5%;
+        padding: 7px;
+    }
+    .col-5-5 {
+        background-color: #8558e795;
+        border-radius: 25px;
+        width: 46.25%;
+        padding: 7px;
+    }
+    .col-11-5 {
+        background-color: #8558e795;
+        border-radius: 25px;
+        width: 93.25%;
+        padding: 7px;
+    }
+    .number {
+        font-size: 37.5px;
+    }
+    .heading {
+        font-size: 20px;
+    }
+    #admin-met-with-div ::selection {
+         background: grey;
+    }
+    #title-div ::selection {
+         background: grey;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+
+<div class="content">
+    <p></p>
+    <div id="report" style="position:relative">
+        <button id="pdf-export" data-html2canvas-ignore onclick="genPDF()" class="btn btn-primary" style="background-color:#6b34eb;border-color:#6b34eb;position:absolute;top:8px;right:6px;">Export Report as PDF</button>
+        <div id="title-div">
+            <h3 id="title">ASG Performance Summary</h3>
+            <p>The following is a summary of how ASG as a whole has performed in the 2022-2023 academic year.</p>
+        </div>
+        <p></p>
+            <div class="row justify-content-center">
+                <p data-html2canvas-ignore></p>
+                <div class="col-5-5 mr-md-3">
+                    <div class="heading">Average Number of Hours Worked on ASG per Week per Person</div>
+                    <div id="average_hours_worked" class="number"></div>
+                </div>
+                <div class="col-5-5 mr-md-3">
+                    <div class="heading">Total Number of Hours Worked on ASG</div>
+                    <div id="total_hours_worked" class="number"></div>
+                </div>
+            </div>
+            <p></p>
+            <div class="row justify-content-center">
+                <div class="col-5-5 mr-md-3">
+                    <div class="heading">Total Number of Committee Meetings</div>
+                    <div id="total_committee_meetings" class="number"></div>
+                </div> 
+                <div class="col-5-5 mr-md-3">
+                    <div class="heading">Total Number of Meetings with Admin</div>
+                    <div id="total_meetings_admin" class="number"></div>
+                </div>
+            </div>
+            <p></p>
+            <div class="row justify-content-center">
+                <div class="col-5-5 mr-md-3">
+                    <div class="heading">Are you recieveing support from ASG exec?</div>
+                        <canvas id="asg_support" width="400"></canvas>
+                </div>
+                <div class="col-5-5 mr-md-3">
+                    <div class="heading" style="margin-bottom:6px">List of Admin Met with by ASG</div>
+                    <ul class="list-group" id="admin_list" style="width:80%;margin:auto;height:230px;overflow:scroll">
+                    </ul>
+                </div>
+            </div>
+            <p></p>
+    </div>
+    <br>
+    <br>
+</div>
+
+<script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js'></script>
+
+<script>
+    data = JSON.parse('{{data | tojson}}');
+    total_hours_worked = 0
+    total_committee_meetings = 0
+    total_meetings_admin = 0
+    num_entries = 0
+    tot_yes = 0
+    tot_no = 0
+    admin_dict = {}
+    for (let i = 0; i < data.length; i++) {
+        curr_row = data[i];
+        total_hours_worked += curr_row.num_hours_worked
+        total_committee_meetings += curr_row.num_committee_meetings
+        total_meetings_admin += curr_row.num_meetings_admin_since_last
+        num_entries++
+        if (curr_row.recieveing_support === 'Yes') {
+            tot_yes++
+        } else {
+            tot_no++
+        }
+        if (curr_row.admin_met_with != null) {
+            admin_list = curr_row.admin_met_with.split(",").map(function (value) {
+                return value.trim();
+            });
+            admin_list = admin_list.filter(function(x) {
+                return x !== '';
+            });
+            admin_num_list = curr_row.admin_met_with_numbers.split(",").map(function (value) {
+                return value.trim();
+            });
+            admin_num_list = admin_num_list.filter(function(x) {
+                return x !== '';
+            });
+            for (let j = 0; j < admin_list.length; j++) {
+                curr_admin = admin_list[j]
+                if (curr_admin in admin_dict) {
+                    admin_dict[curr_admin] += Number(admin_num_list[j])
+                } else {
+                    admin_dict[curr_admin] = Number(admin_num_list[j])
+                }
+            }
+        }
+    }
+    average_hours_worked = total_hours_worked / num_entries
+    document.getElementById('total_hours_worked').textContent = total_hours_worked
+    document.getElementById('average_hours_worked').textContent = average_hours_worked
+    document.getElementById('total_committee_meetings').textContent = total_committee_meetings
+    document.getElementById('total_meetings_admin').textContent = total_meetings_admin
+    var items = Object.keys(admin_dict).map((key) => { return [key, admin_dict[key]]});
+    items.sort((first, second) => { return first[1] - second[1] });
+    var keys = items.map((e) => { return e[0] }).reverse();
+    for (let j = 0; j < keys.length; j++) {
+        curr_key = keys[j]
+        curr_val = admin_dict[curr_key]
+        let li = document.createElement('li')
+        li.classList.add('list-group-item')
+        li.classList.add('d-flex')
+        li.classList.add('justify-content-between')
+        li.classList.add('align-items-center')
+        li.style.borderRadius = '10px'
+        if (curr_val != 1) {
+            li.innerHTML = `<div style="float:left">${curr_key}</div><div style="float:right">${curr_val} total meetings</div>`
+        } else {
+            li.innerHTML = `<div style="float:left">${curr_key}</div><div style="float:right">${curr_val} total meeting</div>`
+        }
+        document.getElementById('admin_list').append(li)
+    }
+    asg_support_canvas = new Chart(document.getElementById("asg_support"), {
+        type: 'doughnut',
+        data: {
+            labels: ["Yes", "No"],
+            datasets: [{
+                data: [tot_yes, tot_no],
+                backgroundColor: ["rgba(107, 52, 235)", "rgba(234, 230, 242)"]
+            }]
+        }
+    });
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
+
+<script>
+    function genPDF() {
+        html2canvas(document.getElementById('report')).then(function (canvas) {
+            var wid;
+            var hgt;
+            var img = canvas.toDataURL("image/png", wid = canvas.width, hgt = canvas.height);
+            var hratio = hgt / wid;
+            const doc = new jsPDF();
+            var width = doc.internal.pageSize.width;
+            var height = doc.internal.pageSize.height;
+            var height = width * hratio;
+            doc.addImage(img, 'JPEG', width*.05, 10, width*.90, height*.90, 'FAST');
+            doc.save(`ASGPerformanceSummary.pdf`);     
+        });
+    }
+</script>
+
+{% endblock %}

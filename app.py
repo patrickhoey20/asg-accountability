@@ -158,3 +158,27 @@ def search_by_person():
             curr_row['notes'] = ''
         data.append(curr_row)
     return render_template('search_by_person.html',stakeholders=stakeholders,data=data)
+
+@app.route("/asg_performance_summary")
+def asg_performance_summary():
+    data_q = Accountability.query.order_by(Accountability.date.desc()).all()
+    data = []
+    for row in data_q:
+        curr_row = {}
+        curr_row['date'] = row.date
+        curr_row['stakeholder'] = row.stakeholder
+        curr_row['num_meetings_admin_since_last'] = row.num_meetings_admin_since_last
+        curr_row['admin_met_with'] = row.admin_met_with
+        curr_row['admin_met_with_numbers'] = row.admin_met_with_numbers
+        curr_row['num_meetings_students'] = row.num_meetings_students
+        curr_row['num_committee_meetings'] = row.num_committee_meetings
+        curr_row['num_meetings_other_committees'] = row.num_meetings_other_committees
+        curr_row['num_hours_worked'] = row.num_hours_worked
+        curr_row['asg_rating'] = row.asg_rating
+        curr_row['recieveing_support'] = row.recieveing_support
+        if row.notes != None:
+            curr_row['notes'] = row.notes.replace('\r\n','newlinehere').replace('"',"'")
+        else:
+            curr_row['notes'] = ''
+        data.append(curr_row)
+    return render_template('asg_performance_summary.html',stakeholders=stakeholders,data=data)
