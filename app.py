@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import os
 
@@ -182,3 +182,10 @@ def asg_performance_summary():
             curr_row['notes'] = ''
         data.append(curr_row)
     return render_template('asg_performance_summary.html',stakeholders=stakeholders,data=data)
+
+# FOR ASG PIVOT
+@app.route("/mockdata", methods = ['GET', 'POST'])
+def mockdata():
+    if (request.method == 'GET'):
+            data = "hello world"
+            return jsonify({'data': data})
