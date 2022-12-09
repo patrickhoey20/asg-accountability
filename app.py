@@ -193,10 +193,13 @@ def asg_performance_summary():
 @app.route("/mockdata", methods = ['GET', 'POST'])
 @cross_origin()
 def mockdata():
-    x = 1
+    rows = None
     if (request.method == 'GET'):
-        df = pd.read_csv(r'pivotcsvs/cleaned-asg-data.csv')
-        df.to_json(r'pivotjsons/cleaned-asg-data.json')
-        f = open(r'pivotjsons/cleaned-asg-data.json')
-        data = json.load(f)
-        return data
+        with open('pivotcsvs/cleaned-asg-data.csv', 'r') as csv_file:
+            reader = csv.DictReader(csv_file)
+            rows = [row for row in reader]
+        with open('pivotjsons/cleaned-asg-data.json', 'w') as json_file:
+            json.dump(rows, json_file)
+    f = open(r'pivotjsons/cleaned-asg-data.json')
+    data = json.load(f)
+    return data
