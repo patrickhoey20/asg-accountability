@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import os
+import csv
+import json
+import pandas as pd
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["connection_string"]
@@ -187,5 +190,8 @@ def asg_performance_summary():
 @app.route("/mockdata", methods = ['GET', 'POST'])
 def mockdata():
     if (request.method == 'GET'):
-            data = "hello world"
-            return jsonify({'data': data})
+        df = pd.read_csv(r'pivotcsvs/cleaned-asg-data.csv')
+        df.to_json(r'pivotjsons/cleaned-asg-data.json')
+        f = open(r'pivotjsons/cleaned-asg-data.json')
+        data = json.load(f)
+        return data
