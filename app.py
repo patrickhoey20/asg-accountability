@@ -189,7 +189,7 @@ def asg_performance_summary():
 # FOR ASG PIVOT
 @app.route("/mockdata", methods = ['GET', 'POST'])
 def mockdata():
-    x = 0
+    x = 1
     if (request.method == 'GET'):
         df = pd.read_csv(r'pivotcsvs/cleaned-asg-data.csv')
         df.to_json(r'pivotjsons/cleaned-asg-data.json')
