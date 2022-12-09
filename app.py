@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, jsonify
+from flask_cors import CORS, cross_origin
 from flask_sqlalchemy import SQLAlchemy
 import os
 import csv
@@ -6,6 +7,8 @@ import json
 import pandas as pd
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["connection_string"]
 db = SQLAlchemy(app)
 
@@ -188,6 +191,7 @@ def asg_performance_summary():
 
 # FOR ASG PIVOT
 @app.route("/mockdata", methods = ['GET', 'POST'])
+@cross_origin()
 def mockdata():
     x = 1
     if (request.method == 'GET'):
