@@ -10,6 +10,7 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["connection_string"]
+app.config['JSON_SORT_KEYS'] = False
 db = SQLAlchemy(app)
 
 class Accountability(db.Model):
