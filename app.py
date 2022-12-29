@@ -205,17 +205,72 @@ def mockdata():
     data = json.load(f)
     return data
 
-# FOR ASG PIVOT
+@app.route("/data1819", methods = ['GET', 'POST'])
+@cross_origin()
+def data1819():
+    rows = None
+    if (request.method == 'GET'):
+        with open('pivotcsvs/data1819.csv', 'r') as csv_file:
+            reader = csv.DictReader(csv_file)
+            rows = [row for row in reader]
+        with open('pivotjsons/data1819.json', 'w') as json_file:
+            json.dump(rows, json_file)
+    f = open(r'pivotjsons/data1819.json')
+    data = json.load(f)
+    return data
+
 @app.route("/data1920", methods = ['GET', 'POST'])
 @cross_origin()
 def data1920():
     rows = None
     if (request.method == 'GET'):
-        with open('pivotcsvs/data1920', 'r') as csv_file:
+        with open('pivotcsvs/data1920.csv', 'r') as csv_file:
             reader = csv.DictReader(csv_file)
             rows = [row for row in reader]
         with open('pivotjsons/data1920.json', 'w') as json_file:
             json.dump(rows, json_file)
     f = open(r'pivotjsons/data1920.json')
+    data = json.load(f)
+    return data
+
+@app.route("/data2021", methods = ['GET', 'POST'])
+@cross_origin()
+def data2021():
+    rows = None
+    if (request.method == 'GET'):
+        with open('pivotcsvs/data2021.csv', 'r') as csv_file:
+            reader = csv.DictReader(csv_file)
+            rows = [row for row in reader]
+        with open('pivotjsons/data2021.json', 'w') as json_file:
+            json.dump(rows, json_file)
+    f = open(r'pivotjsons/data2021.json')
+    data = json.load(f)
+    return data
+
+@app.route("/data2122", methods = ['GET', 'POST'])
+@cross_origin()
+def data2122():
+    rows = None
+    if (request.method == 'GET'):
+        with open('pivotcsvs/data2122.csv', 'r') as csv_file:
+            reader = csv.DictReader(csv_file)
+            rows = [row for row in reader]
+        with open('pivotjsons/data2122.json', 'w') as json_file:
+            json.dump(rows, json_file)
+    f = open(r'pivotjsons/data2122.json')
+    data = json.load(f)
+    return data
+
+@app.route("/data2223", methods = ['GET', 'POST'])
+@cross_origin()
+def data2223():
+    rows = None
+    if (request.method == 'GET'):
+        with open('pivotcsvs/data2223.csv', 'r') as csv_file:
+            reader = csv.DictReader(csv_file)
+            rows = [row for row in reader]
+        with open('pivotjsons/data2223.json', 'w') as json_file:
+            json.dump(rows, json_file)
+    f = open(r'pivotjsons/data2223.json')
     data = json.load(f)
     return data
