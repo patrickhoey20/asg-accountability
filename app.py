@@ -204,3 +204,18 @@ def mockdata():
     f = open(r'pivotjsons/cleaned-asg-data.json')
     data = json.load(f)
     return data
+
+# FOR ASG PIVOT
+@app.route("/data1920", methods = ['GET', 'POST'])
+@cross_origin()
+def data1920():
+    rows = None
+    if (request.method == 'GET'):
+        with open('pivotcsvs/data1920', 'r') as csv_file:
+            reader = csv.DictReader(csv_file)
+            rows = [row for row in reader]
+        with open('pivotjsons/data1920.json', 'w') as json_file:
+            json.dump(rows, json_file)
+    f = open(r'pivotjsons/data1920.json')
+    data = json.load(f)
+    return data
