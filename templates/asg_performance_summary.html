@@ -145,6 +145,7 @@
         }
     }
     average_hours_worked = total_hours_worked / num_entries
+    average_hours_worked = average_hours_worked.toFixed(2)
     document.getElementById('total_hours_worked').textContent = total_hours_worked
     document.getElementById('average_hours_worked').textContent = average_hours_worked
     document.getElementById('total_committee_meetings').textContent = total_committee_meetings
