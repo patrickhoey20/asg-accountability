@@ -81,7 +81,8 @@ admin =  ['Jaci Casazza',
           'Kelly Schaefer',
           'Mona Dugo',
           'Lesley-Ann Brown Henderson',
-          'Patricia Lampkin']
+          'Patricia Lampkin',
+          'Caleb Snead']
 
 @app.route("/")
 def home():
