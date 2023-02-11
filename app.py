@@ -275,3 +275,17 @@ def data2223():
     f = open(r'pivotjsons/data2223.json')
     data = json.load(f)
     return data
+
+@app.route("/datawinter2223", methods = ['GET', 'POST'])
+@cross_origin()
+def datawinter2223():
+    rows = None
+    if (request.method == 'GET'):
+        with open('pivotcsvs/datawinter2223.csv', 'r') as csv_file:
+            reader = csv.DictReader(csv_file)
+            rows = [row for row in reader]
+        with open('pivotjsons/datawinter2223.json', 'w') as json_file:
+            json.dump(rows, json_file)
+    f = open(r'pivotjsons/datawinter2223.json')
+    data = json.load(f)
+    return data
