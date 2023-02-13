@@ -68,7 +68,8 @@ stakeholders = ['Jason Hegelmeyer',
                 'Sara Azimipour',
                 'Dylan Jost',
                 'Leah Ryzenman',
-                'Dalia Segal-Miller']
+                'Dalia Segal-Miller',
+                'Caleb Snead']
 admin =  ['Jaci Casazza',
           'Michael Fitzpatrick',
           'Roma Khanna',
@@ -81,8 +82,7 @@ admin =  ['Jaci Casazza',
           'Kelly Schaefer',
           'Mona Dugo',
           'Lesley-Ann Brown Henderson',
-          'Patricia Lampkin',
-          'Caleb Snead']
+          'Patricia Lampkin']
 
 @app.route("/")
 def home():
