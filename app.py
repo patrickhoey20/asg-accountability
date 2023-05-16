@@ -13,8 +13,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ["connection_string"]
 app.config['JSON_SORT_KEYS'] = False
 db = SQLAlchemy(app)
 
-class Accountability(db.Model):
-    __tablename__ = "accountability"
+class Accountability_2023(db.Model):
+    __tablename__ = "accountability_2023"
     id = db.Column(db.Integer, primary_key=True)
     stakeholder = db.Column(db.String)
     date = db.Column(db.Date)
@@ -45,31 +45,49 @@ class Accountability(db.Model):
         self.recieveing_support = recieveing_support
         self.notes = notes
 
+class Projects(db.Model):
+    __tablename__ = "projects"
+    id = db.Column(db.Integer, primary_key=True)
+    committee_name = db.Column(db.String)
+    date = db.Column(db.Date)
+    project_name = db.Column(db.String)
+    num_hours_worked = db.Column(db.Integer)
+    notes = db.Column(db.String)
+
+    def __init__(self, committee_name, date, project_name, num_hours_worked, notes):
+        self.committee_name = committee_name
+        self.date = date
+        self.project_name = project_name
+        self.num_hours_worked = num_hours_worked
+        self.notes = notes
+
 with app.app_context():
     db.create_all()
 
-stakeholders = ['Jason Hegelmeyer',
-                'Donovan Cusick',
-                'Steph Shields',
-                'Valeria Rodriguez',
-                'Jo Scaletty',
+stakeholders = ['Donovan Cusick',
                 'Molly Whalen',
-                'Armaan Ajani',
-                'Sadie Bernstein',
-                'Alexis Schwartz',
-                'Joshua Gregory',
-                'Marcos Rios',
-                'Felix Beilin',
-                'Brian Whetsell',
-                'Zai Dawodu',
-                'Julia Karten',
-                'Sam Douki',
-                'Sohae Yang',
-                'Sara Azimipour',
-                'Dylan Jost',
-                'Leah Ryzenman',
                 'Dalia Segal-Miller',
-                'Caleb Snead']
+                'Alexis Schwartz',
+                'Malik Rice',
+                'Constanza Estrada',
+                'Aylin Eryilmaz',
+                'Enzo Banal',
+                'Dylan Jost',
+                'Kurtis Nelson',
+                'Patrick Hoey',
+                'Aria Wozniak',
+                'Leah Ryzenman',
+                'Grace Houren',
+                'Brian Whetsell',
+                'Adrian Ayala-Perez',
+                'Madeleine Williams',
+                'Stephanie Shields',
+                'Zai Dawodu',
+                'Caleb Snead',
+                'Mia Xia',
+                'Ty\'Shea Woods',
+                'Sam Bull']
+
 admin =  ['Jaci Casazza',
           'Michael Fitzpatrick',
           'Roma Khanna',
@@ -82,7 +100,11 @@ admin =  ['Jaci Casazza',
           'Kelly Schaefer',
           'Mona Dugo',
           'Lesley-Ann Brown Henderson',
-          'Patricia Lampkin']
+          'Susan Davis']
+
+committees = ['Academics']
+
+projects = ['Project 1']
 
 @app.route("/")
 def home():
@@ -90,7 +112,7 @@ def home():
 
 @app.route("/data_entry")
 def data_entry():
-    data = Accountability.query.order_by(Accountability.date.desc()).all()
+    data = Accountability_2023.query.order_by(Accountability_2023.date.desc()).all()
     stakeholders_and_dates = []
     for row in data:
         curr_row = {}
@@ -136,7 +158,7 @@ def data_submitted():
         notes = request.form.get('notes')
         if notes == '':
             notes = None
-        reg = Accountability(stakeholder,date,num_meetings_admin_since_last,admin_met_with,admin_met_with_numbers,
+        reg = Accountability_2023(stakeholder,date,num_meetings_admin_since_last,admin_met_with,admin_met_with_numbers,
                             num_meetings_students, num_committee_meetings,num_meetings_other_committees,num_hours_worked,
                             asg_rating,recieveing_support,notes)
         db.session.add(reg)
@@ -145,7 +167,7 @@ def data_submitted():
 
 @app.route("/search_by_person")
 def search_by_person():
-    data_q = Accountability.query.order_by(Accountability.date.desc()).all()
+    data_q = Accountability_2023.query.order_by(Accountability_2023.date.desc()).all()
     data = []
     for row in data_q:
         curr_row = {}
@@ -169,7 +191,7 @@ def search_by_person():
 
 @app.route("/asg_performance_summary")
 def asg_performance_summary():
-    data_q = Accountability.query.order_by(Accountability.date.desc()).all()
+    data_q = Accountability_2023.query.order_by(Accountability_2023.date.desc()).all()
     data = []
     for row in data_q:
         curr_row = {}
@@ -289,3 +311,29 @@ def datawinter2223():
     f = open(r'pivotjsons/datawinter2223.json')
     data = json.load(f)
     return data
+
+@app.route("/project_data")
+def project_data():
+    proj_data = []
+    data = Projects.query.order_by(Projects.date.desc()).all()
+    for row in data:
+        curr_row = {}
+        curr_row['date'] = row.date
+        curr_row['committee_name'] = row.committee_name
+        proj_data.append(curr_row)
+    return render_template('project_data.html',project_data=proj_data,committees=committees,projects=projects)
+
+@app.route("/project_data_submitted", methods=['POST'])
+def project_data_submitted():
+    if request.method == 'POST':
+        committee_name = request.form['committee_name']
+        date = request.form['date']
+        project_name = request.form['project_name']
+        num_hours_worked = request.form['num_hours_worked']
+        notes = request.form.get('notes')
+        if notes == '':
+            notes = None
+        reg = Projects(committee_name,date,project_name,num_hours_worked,notes)
+        db.session.add(reg)
+        db.session.commit()
+    return render_template('data_submitted.html')

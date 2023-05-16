@@ -7,13 +7,16 @@
     document.getElementById('home').className = 'nav-link';
     document.getElementById('data').className = 'nav-link active';
     document.getElementById('data').href = 'javascript: void(0)';
+    document.getElementById('project').className = 'nav-link';
     document.getElementById('person').className = 'nav-link';
     document.getElementById('summary').className = 'nav-link';
 </script>
 
 <div>
 
-    <h3>Enter New Data</h3>
+    <p></p>
+
+    <h3>Enter Personal Data</h3>
 
     <form action="{{ url_for('data_submitted') }}" method="post" class="needs-validation" role="form" novalidate>
 
