@@ -102,9 +102,16 @@ admin =  ['Jaci Casazza',
           'Lesley-Ann Brown Henderson',
           'Susan Davis']
 
-committees = ['Academics']
-
-projects = ['Project 1']
+committees = ['Academics',
+              'Analytics',
+              'Campus Life',
+              'Communications',
+              'Community Relations',
+              'Finance',
+              'Health & Wellness',
+              'Justice & Inclusion',
+              'Policy Research',
+              'Sustainability']
 
 @app.route("/")
 def home():
@@ -314,21 +321,28 @@ def datawinter2223():
 
 @app.route("/project_data")
 def project_data():
-    proj_data = []
+    projects_data = {}
     data = Projects.query.order_by(Projects.date.desc()).all()
     for row in data:
-        curr_row = {}
-        curr_row['date'] = row.date
-        curr_row['committee_name'] = row.committee_name
-        proj_data.append(curr_row)
-    return render_template('project_data.html',project_data=proj_data,committees=committees,projects=projects)
+        commitee_name = row.committee_name
+        project_name = row.project_name
+        if (commitee_name in projects_data.keys()):
+            if (not project_name in projects_data[commitee_name]):
+                projects_data[commitee_name].append(project_name)
+        else:
+            projects_data[commitee_name] = [project_name]
+    return render_template('project_data.html',projects_data=projects_data,committees=committees)
 
 @app.route("/project_data_submitted", methods=['POST'])
 def project_data_submitted():
     if request.method == 'POST':
         committee_name = request.form['committee_name']
         date = request.form['date']
-        project_name = request.form['project_name']
+        project_name = None
+        if (request.form['project_name'] != 'Other'):
+            project_name = request.form['project_name']
+        else:
+            project_name = request.form['project_other']
         num_hours_worked = request.form['num_hours_worked']
         notes = request.form.get('notes')
         if notes == '':

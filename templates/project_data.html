@@ -23,7 +23,7 @@
         <div class="form-row">
             <div class="form-group col-md-10">
                 <label class="control-label" for="committee_name">Name of Committee</label>
-                <select class="form-control" id="committee_name" name="committee_name" data-size="10" data-live-search="true" required title="Choose a committee...">
+                <select class="form-control" id="committee_name" name="committee_name" data-size="10" data-live-search="true" required title="Choose a committee..." onchange="changeProjects()">
                     {% for i in range(committees | length) %}
                     <option value="{{committees[i]}}">{{committees[i]}}</option>
                     {% endfor %}
@@ -32,6 +32,34 @@
                     Please select a value.
                 </div>
             </div>
+
+            <script>
+                function changeProjects() {
+                    document.getElementById('project_select').className = 'form-group col-md-12'
+                    document.getElementById('project_other_div').style.display = 'none'
+                    projects_data = JSON.parse('{{projects_data | tojson}}');
+                    let committee_name = document.getElementById('committee_name').value
+                    let projects_list = projects_data[committee_name]
+                    let projects_select = document.getElementById('project_name')
+                    $("#project_name").empty();
+                    $("#project_name").selectpicker('refresh');
+                    if (projects_list) {
+                        for (let i = 0; i < projects_list.length; i++) {
+                            var newOption = document.createElement("option");
+                            newOption.value = projects_list[i];
+                            newOption.text = projects_list[i];
+                            projects_select.append(newOption);
+                            $("#project_name").selectpicker("refresh");
+                        }
+                    }
+                    var newOption = document.createElement("option");
+                    newOption.value = 'Other';
+                    newOption.text = 'Other';
+                    projects_select.append(newOption);
+                    $("#project_name").selectpicker("refresh");
+                }
+            </script>
+
             <div class="form-group col-md-2">
                 <label class="control-label" for="date">Today's Date</label>
                 <input class="form-control" id="date" name="date" type="date" required>
@@ -41,18 +69,35 @@
             </div>
         </div>
         <div class="form-row">
-            <div class="form-group col-md-6">
+            <div class="form-group col-md-12" id="project_select">
                 <label class="control-label" for="project_name">Name of Project</label>
-                <select class="form-control" id="project_name" name="project_name" data-size="10" data-live-search="true" required title="Choose a project...">
-                    {% for i in range(projects | length) %}
-                    <option value="{{projects[i]}}">{{projects[i]}}</option>
-                    {% endfor %}
+                <select class="form-control" id="project_name" name="project_name" data-size="10" data-live-search="true" required title="Choose a project..." onchange="addOtherField()">
                 </select>
                 <div class="invalid-feedback">
                     Please select a value.
                 </div>
             </div>
-            <div class="form-group col-md-6">
+
+            <script>
+                function addOtherField() {
+                    let project_selected = document.getElementById('project_name').value
+                    if (project_selected === 'Other') {
+                        document.getElementById('project_other_div').style.display = 'block'
+                        document.getElementById('project_select').className = 'form-group col-md-6'
+                    } else {
+                        document.getElementById('project_other_div').style.display = 'none'
+                        document.getElementById('project_select').className = 'form-group col-md-12'
+                    }
+                }
+            </script>
+
+            <div class="form-group col-md-6" id="project_other_div" style="display:none">
+                <label class="control-label" for="project_other">New Project Name</label>
+                <input class="form-control" id="project_other" name="project_other" type="text">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-12">
                 <label class="control-label" for="num_hours_worked">Number of Hours Worked Since Last Meeting</label>
                 <input class="form-control" id="num_hours_worked" name="num_hours_worked" type="number" min="0" step="1" value="" required>
                 <div class="invalid-feedback">
