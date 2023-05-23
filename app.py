@@ -351,3 +351,18 @@ def project_data_submitted():
         db.session.add(reg)
         db.session.commit()
     return render_template('data_submitted.html')
+
+@app.route("/projectapi", methods = ['GET', 'POST'])
+@cross_origin()
+def projectapi():
+    new_data = []
+    data = Projects.query.order_by(Projects.date.desc()).all()
+    for row in data:
+        row_dict = {}
+        row_dict["commitee_name"] = str(row.committee_name)
+        row_dict["date"] = str(row.date)
+        row_dict["project_name"] = str(row.project_name)
+        row_dict["num_hours_worked"] = str(row.num_hours_worked)
+        row_dict["notes"] = str(row.notes)
+        new_data.append(row_dict)
+    return new_data
