@@ -365,7 +365,7 @@ def projectapi():
                 num = int(data['num_hours_worked'])
                 num += int(row.num_hours_worked)
                 data['num_hours_worked'] = str(num)
-                row_dict["data"].append({
+                data["data"].append({
                     'date':  str(row.date),
                     'notes': str(row.notes)
                 })
