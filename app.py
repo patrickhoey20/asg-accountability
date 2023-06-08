@@ -358,11 +358,25 @@ def projectapi():
     new_data = []
     data = Projects.query.order_by(Projects.date.desc()).all()
     for row in data:
+        found = False
+        for data in new_data:
+            if data['committee_name'] == str(row.committee_name) and data['project_name'] == str(row.project_name):
+                found = True
+                num = int(data['num_hours_worked'])
+                num += int(row.num_hours_worked)
+                data['num_hours_worked'] = str(num)
+                row_dict["data"].append({
+                    'date':  str(row.date),
+                    'notes': str(row.notes)
+                })
         row_dict = {}
-        row_dict["committee_name"] = str(row.committee_name)
-        row_dict["date"] = str(row.date)
-        row_dict["project_name"] = str(row.project_name)
-        row_dict["num_hours_worked"] = str(row.num_hours_worked)
-        row_dict["notes"] = str(row.notes)
-        new_data.append(row_dict)
+        if not found:
+            row_dict["committee_name"] = str(row.committee_name)
+            row_dict["project_name"] = str(row.project_name)
+            row_dict["num_hours_worked"] = str(row.num_hours_worked)
+            row_dict["data"] = [{
+                'date':  str(row.date),
+                'notes': str(row.notes)
+            }]
+            new_data.append(row_dict)
     return new_data
